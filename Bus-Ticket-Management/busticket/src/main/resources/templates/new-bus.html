@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Bus</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Add New Bus</h2>
+        <form id="newBusForm" method="POST" action="/api/bus/new-bus">
+            <div class="form-group">
+                <label for="plate">Bus Plate</label>
+                <input type="text" class="form-control" id="plate" name="plate" maxlength="12" required />
+            </div>
+            <div class="form-group">
+                <label for="seatType">Seat Type</label>
+                <select class="form-control" id="seatType" name="seatType" required>
+                    <option value="economy">Economy</option>
+                    <option value="limousine">Limousine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="numberOfSeat">Number of Seats</label>
+                <input type="number" class="form-control" id="numberOfSeat" name="numberOfSeat" min="1" required />
+            </div>
+            <div id="seatNamesContainer" class="form-group">
+                <!-- Dynamic seat name input fields will be added here -->
+            </div>
+            <button type="submit" class="btn btn-primary">Add Bus</button>
+            <a href="/easy-bus/bus-management" class="btn btn-secondary">Back to Bus Management</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#numberOfSeat").on("input", function () {
+                const numberOfSeat = $(this).val();
+                const seatNamesContainer = $("#seatNamesContainer");
+                seatNamesContainer.empty();
+
+                const seatNames = generateSeatNames(numberOfSeat);
+                let tableHtml = '<table class="table table-bordered"><tbody>';
+                for (let i = 0; i < seatNames.length; i += 4) {
+                    tableHtml += '<tr>';
+                    for (let j = 0; j < 4; j++) {
+                        if (i + j < seatNames.length) {
+                            tableHtml += `<td>${seatNames[i + j]}</td>`;
+                        } else {
+                            tableHtml += '<td></td>';
+                        }
+                    }
+                    tableHtml += '</tr>';
+                }
+                tableHtml += '</tbody></table>';
+                seatNamesContainer.append(tableHtml);
+            });
+
+            $("#newBusForm").on("submit", function (event) {
+                event.preventDefault();
+                const formData = {
+                    plate: $("#plate").val(),
+                    seatType: $("#seatType").val(),
+                    numberOfSeat: $("#numberOfSeat").val(),
+                    seatNames: generateSeatNames($("#numberOfSeat").val())
+                };
+
+                fetch("/api/bus/new-bus", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.message) {
+                            alert(data.message);
+                            if (data.message == "Bus saved successfully.") {
+                                window.location.href = "/easy-bus/bus-management";
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error adding bus:", error);
+                    });
+            });
+        });
+
+        function generateSeatNames(numberOfSeat) {
+            const seatNames = [];
+            const rows = Math.ceil(numberOfSeat / 2);
+            for (let i = 1; i <= rows; i++) {
+                seatNames.push(`A${i}`);
+                if (seatNames.length < numberOfSeat) {
+                    seatNames.push(`B${i}`);
+                }
+            }
+            return seatNames;
+        }
+    </script>
+</body>
+
+</html>

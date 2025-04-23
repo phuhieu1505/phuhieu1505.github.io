@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+    <title>Easy Bus</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--Bootstrap icon -->
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <!-- style css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <!-- Responsive-->
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <!-- fevicon -->
+    <link rel="icon" th:href="@{/images/fevicon.png}" type="image/gif" />
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}">
+    <!-- Tweaks for older IEs-->
+    <link rel="stylesheet"
+        th:href="@{https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css}"
+        integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+    <!-- fonts -->
+    <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+    <!-- font awesome -->
+    <!-- <link rel="stylesheet" type="text/css" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}"> -->
+    <!--  -->
+    <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}">
+    <!-- owl stylesheets -->
+    <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+    <link rel="stylesoeet" th:href="@{/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+        media="screen">
+</head>
+
+<body>
+    <!-- header top section start -->
+    <div class="container">
+        <div class="header_section_top">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="custom_menu">
+                        <ul>
+
+                            <li><a th:href="@{index}">Trang Chủ</a></li>
+                            <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                            <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                            <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                            <li><a th:href="@{contact}">Liên Hệ</a></li>
+                            <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- header section start -->
+    <!-- Schedule table section -->
+    <div class="about_section">
+        <div class="container">
+            <hr class="space_bottom">
+            <div class="box-card d-flex flex-wrap">
+                <div class="full">
+                    <h1>Lịch Trình</h1>
+                    <form th:action="@{/schedule}" method="get">
+                        <div class="d-flex flex-nowrap">
+                            <div class="d-flex flex-grow-1 full input-group ">
+                                <div class="input-group-append full">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="departure" name="departure" class="form-control"
+                                        onkeyup="filterTable()" placeholder="Nhập điểm đi">
+                                </div>
+                            </div>
+                            <button class="swap-btn-2" onclick="swapValues()">⇆</button>
+                            <div class="full input-group">
+                                <div class="input-group-append full">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="dropoff" name="dropoff" class="form-control"
+                                        onkeyup="filterTable()" placeholder="Nhập điểm đến">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table id="scheduleTable" class="table table-striped space">
+                    <thead>
+                        <tr class="table-title">
+                            <th onclick="sortTable(0)">Mã Tuyến</th>
+                            <th onclick="sortTable(1)">Điểm Khởi Hành</th>
+                            <th onclick="sortTable(2)">Điểm Đến</th>
+                            <th onclick="sortTable(3)">Thời Gian</th>
+                            <th onclick="sortTable(4)">Khoảng Cách</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="schedule : ${schedules}">
+                            <td th:text="${schedule.code}"></td>
+                            <td th:text="${schedule.departureName}"></td>
+                            <td th:text="${schedule.dropOffName}"></td>
+                            <td th:text="${schedule.time}"></td>
+                            <td th:text="${schedule.distance}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- footer section start -->
+    <div class="footer_section layout_padding">
+        <div class="container">
+            <div class="footer_logo"><a th:href="@{index}"><img src="/images/EasyBus_processed2.png"></a></div>
+            <div class="input_bt">
+                <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+                <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+            </div>
+            <div class="footer_menu">
+                <ul>
+                    <li><a th:href="@{index}">Trang Chủ</a></li>
+                    <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                    <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                    <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                    <li><a th:href="@{contact}">Liên Hệ</a></li>
+                    <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                </ul>
+            </div>
+            <div class="location_main">Help Line Number : <a href="#">+84 1800 9999 1111</a></div>
+        </div>
+    </div>
+    <!-- footer section end -->
+    <!-- copyright section start -->
+    <div class="copyright_section">
+        <div class="container">
+            <p class="copyright_text"><a>© 2024 All Rights Reserved. Design by Nhóm 10</a></p>
+        </div>
+    </div>
+    <!-- copyright section end -->
+    <!-- Javascript files-->
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+    <script th:src="@{/js/plugin.js}"></script>
+    <!-- sidebar -->
+    <script th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:src="@{/js/custom.js}"></script>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+        function filterTable() {
+            var departureInput = document.getElementById('departure').value.toLowerCase();
+            var dropoffInput = document.getElementById('dropoff').value.toLowerCase();
+            var table = document.getElementById('scheduleTable');
+            var tr = table.getElementsByTagName('tr');
+
+            for (var i = 1; i < tr.length; i++) {
+                var tdDeparture = tr[i].getElementsByTagName('td')[1];
+                var tdDropoff = tr[i].getElementsByTagName('td')[2];
+                if (tdDeparture && tdDropoff) {
+                    var departureText = tdDeparture.textContent || tdDeparture.innerText;
+                    var dropoffText = tdDropoff.textContent || tdDropoff.innerText;
+                    if (departureText.toLowerCase().indexOf(departureInput) > -1 && dropoffText.toLowerCase().indexOf(dropoffInput) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        // Function to swap the values of the departure and dropoff input fields
+        function swapValues() {
+            event.preventDefault();
+            const departureInput = document.getElementById('departure');
+            const destinationInput = document.getElementById('dropoff');
+            const temp = departureInput.value;
+            departureInput.value = destinationInput.value;
+            destinationInput.value = temp;
+        }
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("scheduleTable");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

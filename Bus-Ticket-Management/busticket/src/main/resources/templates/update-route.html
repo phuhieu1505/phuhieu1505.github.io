@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Route</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+  <link rel="stylesheet" th:href="@{/theme-assets/css/pagination.css}" />
+  <style>
+    .checkpoint-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .checkpoint-item {
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      cursor: move;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .checkpoint-item input,
+    .checkpoint-item select {
+      margin-right: 10px;
+    }
+
+    .checkpoint-item label {
+      margin-right: 5px;
+      font-weight: bold;
+    }
+
+    .checkpoint-item span {
+      margin-right: 10px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-4 mb-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/easy-bus/route-management">Route Management</a></li>
+        <li class="breadcrumb-item active">Update Route</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="container mt-5">
+    <h1>Update Route</h1>
+    <form id="routeForm" th:object="${route}">
+      <div class="form-group">
+        <label for="code">Route Code</label>
+        <input type="text" class="form-control" id="code" name="code" disabled="true" th:field="*{code}" required />
+      </div>
+      <div class="form-group">
+        <label for="name">Route Name</label>
+        <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required />
+      </div>
+      <div class="form-group">
+        <label for="time">Time</label>
+        <input type="text" class="form-control" id="time" name="time" th:field="*{time}" required />
+      </div>
+      <div class="form-group">
+        <label for="distance">Distance</label>
+        <input type="number" step="0.01" class="form-control" id="distance" name="distance" th:field="*{distance}"
+          required />
+      </div>
+      <h2 class="mt-4">Checkpoints</h2>
+      <div class="form-group">
+        <input type="text" class="form-control" id="searchBox" placeholder="Search checkpoint..." />
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Select</th>
+              <th scope="col">Checkpoint ID</th>
+              <th scope="col">Location</th>
+              <th scope="col">Address</th>
+              <th scope="col">Contact Number</th>
+              <th scope="col">Region</th>
+            </tr>
+          </thead>
+          <tbody id="checkpointTableBody">
+            <!-- Checkpoints will be dynamically loaded here -->
+          </tbody>
+        </table>
+        <div class="pagination">
+          <ul class="pagination-list" id="paginationControls">
+            <!-- Pagination controls will be dynamically generated here -->
+          </ul>
+        </div>
+      </div>
+      <h3 class="mt-4">Selected Checkpoints</h3>
+      <ul id="checkpoint-list" class="checkpoint-list">
+        <!-- Selected checkpoints will be dynamically loaded here -->
+      </ul>
+      <button type="button" id="add-checkpoint" class="btn btn-secondary mt-3">
+        Add Checkpoint
+      </button>
+      <div align="center">
+        <button type="submit" class="btn btn-primary mt-3">Update</button>
+        <button type="reset" class="btn btn-secondary mt-3">Reset</button>
+      </div>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    let selectedCheckpoints = [];
+    let allCheckpoints = [];
+    let initialFormData = {};
+
+    function loadCheckpoints(page, searchTerm = "") {
+      console.log(
+        "Loading checkpoints for page:",
+        page,
+        "with search term:",
+        searchTerm
+      );
+      $.ajax({
+        url: "/api/checkpoint/checkpoints",
+        data: { page: page, size: 10, searchValue: searchTerm },
+        method: "GET",
+        success: function (data) {
+          console.log("Checkpoints data received:", data);
+          allCheckpoints = data.checkpoints;
+          var totalPages = data.totalPages;
+          var currentPage = data.currentPage;
+
+          // Clear the table body
+          $("#checkpointTableBody").empty();
+
+          // Populate the table with checkpoints
+          allCheckpoints.forEach(function (checkpoint) {
+            const isSelected = selectedCheckpoints.some(
+              (cp) => cp.checkpointId == checkpoint.checkpointId
+            );
+            $("#checkpointTableBody").append(
+              "<tr>" +
+              '<td><input type="checkbox" class="checkpoint-checkbox" data-id="' +
+              checkpoint.checkpointId +
+              '" data-name="' +
+              checkpoint.placeName +
+              '" data-address="' +
+              checkpoint.address +
+              '" data-phone="' +
+              checkpoint.phone +
+              '" data-region="' +
+              checkpoint.region +
+              '"' +
+              (isSelected ? " checked" : "") +
+              "></td>" +
+              "<td>" +
+              checkpoint.checkpointId +
+              "</td>" +
+              "<td>" +
+              checkpoint.placeName +
+              "</td>" +
+              "<td>" +
+              checkpoint.address +
+              "</td>" +
+              "<td>" +
+              checkpoint.phone +
+              "</td>" +
+              "<td>" +
+              checkpoint.region +
+              "</td>" +
+              "</tr>"
+            );
+          });
+
+          // Clear the pagination controls
+          $("#paginationControls").empty();
+
+          // Add Previous button
+          if (currentPage > 0) {
+            $("#paginationControls").append(
+              '<li><a onclick="loadCheckpoints(' +
+              (currentPage - 1) +
+              ", '" +
+              searchTerm +
+              "')\">&laquo;</a></li>"
+            );
+          }
+
+          // Add page numbers with ellipsis
+          var startPage = Math.max(0, currentPage - 2);
+          var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+          if (startPage > 0) {
+            $("#paginationControls").append(
+              "<li><a onclick=\"loadCheckpoints(0, '" +
+              searchTerm +
+              "')\">1</a></li>"
+            );
+            if (startPage > 1) {
+              $("#paginationControls").append("<li><span>...</span></li>");
+            }
+          }
+
+          for (var i = startPage; i <= endPage; i++) {
+            $("#paginationControls").append(
+              '<li class="' +
+              (i === currentPage ? "active" : "") +
+              '"><a onclick="loadCheckpoints(' +
+              i +
+              ", '" +
+              searchTerm +
+              "')\">" +
+              (i + 1) +
+              "</a></li>"
+            );
+          }
+
+          if (endPage < totalPages - 1) {
+            if (endPage < totalPages - 2) {
+              $("#paginationControls").append("<li><span>...</span></li>");
+            }
+            $("#paginationControls").append(
+              '<li><a onclick="loadCheckpoints(' +
+              (totalPages - 1) +
+              ", '" +
+              searchTerm +
+              "')\">" +
+              totalPages +
+              "</a></li>"
+            );
+          }
+
+          // Add Next button
+          if (currentPage < totalPages - 1) {
+            $("#paginationControls").append(
+              '<li><a onclick="loadCheckpoints(' +
+              (currentPage + 1) +
+              ", '" +
+              searchTerm +
+              "')\">&raquo;</a></li>"
+            );
+          }
+        },
+      });
+    }
+    function updateSelectedCheckpoints() {
+      console.log("Updating selected checkpoints:", selectedCheckpoints);
+      const checkpointList = document.getElementById("checkpoint-list");
+      checkpointList.innerHTML = "";
+      selectedCheckpoints.forEach((checkpoint, index) => {
+        const checkpointItem = document.createElement("li");
+        checkpointItem.className = "checkpoint-item";
+        checkpointItem.setAttribute("data-id", checkpoint.checkpointId);
+        checkpointItem.innerHTML = `
+      <label>Order:</label>
+      <input type="number" readonly name="checkpoints[${index}][checkpointOrder]" value="${checkpoint.checkpointOrder}" required>
+      <label>Type:</label>
+      <select name="checkpoints[${index}][type]" required>
+        <option value="departure" ${checkpoint.checkpointType === "departure" ? "selected" : ""}>Departure</option>
+        <option value="drop_off" ${checkpoint.checkpointType === "drop_off" ? "selected" : ""}>Drop Off</option>
+        <option value="en_route" ${checkpoint.checkpointType === "en_route" ? "selected" : ""}>En Route</option>
+        <option value="rest" ${checkpoint.checkpointType === "rest" ? "selected" : ""}>Rest</option>
+      </select>
+      <label>Location:</label>
+      <span>${checkpoint.placeName}</span>
+      <label>Address:</label>
+      <span>${checkpoint.address}</span>
+      <input type="hidden" name="checkpoints[${index}][checkpointId]" value="${checkpoint.checkpointId}">
+    `;
+        checkpointList.appendChild(checkpointItem);
+      });
+    }
+    function getSelectedCheckpoints(routeCode) {
+      console.log("Fetching selected checkpoints for route:", routeCode);
+      fetch(`/api/route-checkpoint/selected-checkpoints/${routeCode}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Selected checkpoints data received:", data);
+          if (data.selectedCheckpoints && data.selectedCheckpoints.length > 0) {
+            selectedCheckpoints = data.selectedCheckpoints.map((checkpoint) => ({
+              checkpointId: checkpoint.checkpointId,
+              placeName: checkpoint.placeName,
+              address: checkpoint.address,
+              phone: checkpoint.phone,
+              region: checkpoint.region,
+              checkpointOrder: checkpoint.checkpointOrder,
+              checkpointType: checkpoint.checkpointType,
+            }));
+            updateSelectedCheckpoints();
+          } else {
+            alert("No checkpoints found for this route.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching route checkpoints:", error);
+        });
+    }
+    function getFormData(form) {
+      const formData = new FormData(form);
+      const jsonData = {};
+      formData.forEach((value, key) => {
+        jsonData[key] = value;
+      });
+      jsonData.checkpoints = selectedCheckpoints;
+      return jsonData;
+    }
+
+    function isFormDataChanged(initialData, currentData) {
+      return JSON.stringify(initialData) !== JSON.stringify(currentData);
+    }
+
+    $(function () {
+      $("#checkpoint-list").sortable({
+        update: function (event, ui) {
+          console.log("Checkpoint list order updated");
+          updateCheckpointOrder();
+        },
+      });
+
+      $("#add-checkpoint").on("click", function () {
+        console.log("Adding new checkpoint");
+        const index = $("#checkpoint-list .checkpoint-item").length;
+        const newItem = `
+                <li class="checkpoint-item" data-id="">
+                    <label>Order:</label>
+                    <input type="number" name="checkpoints[${index}][checkpointOrder]" value="${index + 1}" required readonly>
+                    <label>Type:</label>
+                    <select name="checkpoints[${index}][type]" required>
+                        <option value="departure">Departure</option>
+                        <option value="drop_off">Drop Off</option>
+                        <option value="en_route">En Route</option>
+                        <option value="rest">Rest</option>
+                    </select>
+                    <label>Location:</label>
+                    <span></span>
+                    <label>Address:</label>
+                    <span></span>
+                    <input type="hidden" name="checkpoints[${index}][checkpointId]" value="">
+                </li>`;
+        $("#checkpoint-list").append(newItem);
+      });
+      function updateCheckpointOrder() {
+        console.log("Updating checkpoint order");
+        $("#checkpoint-list .checkpoint-item").each(function (index) {
+          $(this)
+            .find("input[name*='[checkpointOrder]']")
+            .val(index + 1);
+
+          // Update the order in the selectedCheckpoints array
+          const checkpointId = $(this).data("id");
+          const checkpoint = selectedCheckpoints.find(cp => cp.checkpointId == checkpointId);
+          if (checkpoint) {
+            checkpoint.checkpointOrder = index + 1;
+          }
+        });
+      }
+    });
+    document.addEventListener("change", function (event) {
+      if (event.target.classList.contains("checkpoint-checkbox")) {
+        const checkbox = event.target;
+        const checkpoint = {
+          checkpointId: Number(checkbox.getAttribute("data-id")),
+          placeName: checkbox.getAttribute("data-name"),
+          address: checkbox.getAttribute("data-address"),
+          province: checkbox.getAttribute("data-province"),
+          city: checkbox.getAttribute("data-city"),
+          phone: checkbox.getAttribute("data-phone"),
+          region: checkbox.getAttribute("data-region"),
+          checkpointOrder: selectedCheckpoints.length + 1,
+          checkpointType: "departure",
+        };
+        if (checkbox.checked) {
+          if (!selectedCheckpoints.some(cp => cp.checkpointId === checkpoint.checkpointId)) {
+            selectedCheckpoints.push(checkpoint);
+          }
+        } else {
+          selectedCheckpoints = selectedCheckpoints.filter(cp => cp.checkpointId !== checkpoint.checkpointId);
+        }
+        updateSelectedCheckpoints();
+      } else if (event.target.tagName === "SELECT" && event.target.name.includes("type")) {
+        const select = event.target;
+        const checkpointId = $(select).closest(".checkpoint-item").data("id");
+        const checkpoint = selectedCheckpoints.find(cp => cp.checkpointId == checkpointId);
+        if (checkpoint) {
+          checkpoint.checkpointType = select.value;
+        }
+      }
+    });
+    document
+      .getElementById("searchBox")
+      .addEventListener("input", function (event) {
+        const searchTerm = event.target.value.toLowerCase();
+        console.log("Search term entered:", searchTerm);
+        loadCheckpoints(0, searchTerm);
+      });
+
+    document
+      .getElementById("routeForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const currentFormData = getFormData(event.target);
+
+        if (!isFormDataChanged(initialFormData, currentFormData)) {
+          alert("Nothing has been changed.");
+          return;
+        }
+
+        if (selectedCheckpoints.length < 2) {
+          alert("Please select at least two checkpoints.");
+          return;
+        }
+
+        const routeCode = window.location.pathname.split("/").pop();
+        console.log("Submitting form with data:", currentFormData);
+
+        fetch(`/api/route/update-route/${routeCode}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(currentFormData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Form submission response:", data);
+            if (data.message) {
+              alert(data.message);
+              //refresh the page:
+              window.location.reload();
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+    $(document).ready(function () {
+      const routeCode = window.location.pathname.split("/").pop();
+      console.log(
+        "Document ready, loading checkpoints and selected checkpoints for route:",
+        routeCode
+      );
+      loadCheckpoints(0);
+      getSelectedCheckpoints(routeCode);
+
+      initialFormData = getFormData(document.getElementById("routeForm"));
+    });
+
+  </script>
+</body>
+
+</html>

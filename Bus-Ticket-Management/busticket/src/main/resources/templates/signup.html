@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/SignUpForm.css}" />
+  <title>Signup</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-6 g-col-4 d-none d-md-block">
+        <img th:src="@{/images/EasyBus_processed.jpeg}" class="rounded mx-auto d-block img-fluid"
+          style="margin-top: 50px" />
+      </div>
+      <div class="col-md-6 col-12 g-col-4">
+        <p class="lead text-center fs-2 fw-bold" style="color: #fcfaee">
+          Sign up to EasyBus
+        </p>
+        <form class="mb-3" id="signupForm" th:action="@{/auth/signup}" method="post">
+          <div class="text-start">
+            <label for="email" class="form-label">Email</label><br />
+            <input class="form-control form-control-lg" type="text" id="email" name="email" required
+              placeholder="Type your email" />
+          </div>
+          <div class="text-start">
+            <label for="password" class="form-label">Password</label><br />
+            <input class="form-control form-control-lg" type="password" id="password" name="password" required
+              placeholder="Type your password" />
+          </div>
+          <div class="text-start">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input class="form-control form-control-lg" type="password" id="confirmPassword" name="confirmPassword"
+              required placeholder="Confirm your password" />
+          </div>
+          <div style="margin-top: 50px">
+            <button class="btn btn-custom" type="submit">Sign Up</button>
+          </div>
+        </form>
+        <br />
+        <p class="text-white text-center space_right">
+          Already have an account?
+          <a th:href="@{/auth/login}" class="text-white fw-bold">Sign in now</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/webjars/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/SignUpForm.js}"></script>
+</body>
+
+</html>

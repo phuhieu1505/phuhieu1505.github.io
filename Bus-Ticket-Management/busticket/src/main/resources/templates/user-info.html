@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Information</title>
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+        media="screen">
+    <link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <script th:src="@{https://code.jquery.com/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js}"></script>
+
+</head>
+
+<body>
+    <!-- header top section start -->
+    <div class="container">
+        <div class="header_section_top">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="custom_menu">
+                        <ul>
+                            <li><a th:href="@{index}">Trang Chủ</a></li>
+                            <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                            <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                            <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                            <li><a th:href="@{contact}">Liên Hệ</a></li>
+                            <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- header top section end -->
+    <!-- header section start -->
+    <div class="about_section">
+        <div class="container">
+            <div class="trip-card">
+                <div class="col-sm-12">
+                    <h1>Thông Tin Người Dùng</h1>
+                    <form id="userInfoForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name:</label>
+                            <input type="text" class="form-control" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone:</label>
+                            <input type="text" class="form-control" id="phone" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Information</button>
+                        <button type="button" class="btn btn-primary" id="changePasswordBtn" data-toggle="modal"
+                            data-target="#changePasswordModal">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog"
+        aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password:</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password:</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password:</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            // Fetch current user ID
+            $.ajax({
+                url: '/api/account/current-user-id',
+                type: 'GET',
+                success: function (userId) {
+                    // Fetch account details using the user ID
+                    $.ajax({
+                        url: `/api/account/account-detail/${userId}`,
+                        type: 'GET',
+                        success: function (response) {
+                            const account = response.account;
+                            $("#fullName").val(account.fullName);
+                            $("#email").val(account.email);
+                            $("#phone").val(account.phone);
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Failed to fetch account details");
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    alert("Failed to fetch user ID");
+                }
+            });
+
+            $("#userInfoForm").on("submit", function (event) {
+                event.preventDefault();
+                const fullName = $("#fullName").val();
+                const email = $("#email").val();
+                const phone = $("#phone").val();
+
+                $.ajax({
+                    url: '/api/account/update-account',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        fullName: fullName,
+                        email: email,
+                        phone: phone
+                    }),
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Account information updated successfully");
+                            if (response.jwtToken) {
+                                document.cookie = "jwtToken=" + response.jwtToken + "; path=/";
+                            }
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            alert(response.message);
+                        } catch (e) {
+                            alert("An error occurred while updating the account.");
+                        }
+                    }
+                });
+            });
+
+            $("#changePasswordForm").on("submit", function (event) {
+                event.preventDefault();
+                const currentPassword = $("#currentPassword").val();
+                const newPassword = $("#newPassword").val();
+                const confirmPassword = $("#confirmPassword").val();
+
+                if (newPassword !== confirmPassword) {
+                    alert("New password and confirm password do not match");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/auth/change-password',
+                    type: 'POST',
+                    data: {
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    },
+                    success: function (response) {
+                        alert(response);
+                        $('#changePasswordModal').modal('hide');
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

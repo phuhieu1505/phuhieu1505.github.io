@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BusticketApplication<busticket>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.myproject.busticket.BusticketApplication",
+      "projectName": "busticket",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

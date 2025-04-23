@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .booked {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .reserved {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .open {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .chosen {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .seat:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/easy-bus/booking-management">Booking Management</a></li>
+                <li class="breadcrumb-item active">Booking Details</li>
+            </ol>
+        </nav>
+
+        <!-- Customer Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Customer ID:</strong> <span th:text="${booking.customer.customerId}"></span></p>
+                        <p><strong>Name:</strong> <span th:text="${booking.customer.name}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Email:</strong> <span th:text="${booking.customer.email}"></span></p>
+                        <p><strong>Phone:</strong> <span th:text="${booking.customer.phone}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trip Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Trip Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Trip ID:</strong> <span th:text="${booking.trip.tripId}"></span></p>
+                        <p th:if="${booking.roundTripId}"><strong>Round Trip ID:</strong> <span
+                                th:text="${booking.roundTripId}"></span></p>
+                        <p><strong>Departure:</strong> <span th:text="${booking.trip.departureTime}"></span></p>
+                        <p><strong>Arrival:</strong> <span th:text="${booking.trip.arrivalTime}"></span></p>
+                        <p><strong>Price:</strong> <span th:text="${booking.trip.price}"></span></p>
+                        <p><strong>Status:</strong>
+                            <span th:class="'badge ' + 
+                                (${booking.trip.status == 'waiting'} ? 'badge-warning' : 
+                                (${booking.trip.status == 'arriving'} ? 'badge-info' : 
+                                (${booking.trip.status == 'finished'} ? 'badge-success' : 'badge-secondary')))"
+                                th:text="${booking.trip.status}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bus:</strong> <a th:href="@{'/easy-bus/bus-detail/' + ${booking.trip.bus.plate}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${booking.trip.bus.plate}"></a></p>
+                        <p><strong>Driver:</strong> <a
+                                th:href="@{'/easy-bus/driver-detail/' + ${booking.trip.driver.driverId}}"
+                                th:text="${booking.trip.driver.account.fullName}"></a></p>
+                        <p><strong>Controller:</strong> <a
+                                th:href="@{'/easy-bus/controller-detail/' + ${booking.trip.controller.id}}"
+                                th:text="${booking.trip.controller.account.fullName}"></a></p>
+                        <p><strong>Staff:</strong> <a
+                                th:href="@{'/easy-bus/staff-detail/' + ${booking.trip.staff.staff_id}}"
+                                th:text="${booking.trip.staff.account.fullName}"></a></p>
+                    </div>
+                </div>
+                <!-- Seat Selection -->
+                <div class="mt-4">
+                    <h6>Selected Seats (<span th:text="${booking.numberOfSeat}"></span>)</h6>
+                    <div class="seat-grid">
+                        <div th:each="seat : ${seatDetails}" th:class="'seat ' + 
+                            (seat.status == 'booked' ? 'booked' : 
+                            (seat.status == 'reserved' ? 'reserved' : 'open')) + 
+                            ' ' + (${seat.bookingId == booking.bookingId} ? 'chosen' : '')"
+                            th:text="${seat.seatNumber}" th:data-toggle="modal" th:data-seatname="${seat.seatNumber}"
+                            th:data-seatid="${seat.seatId}" th:data-status="${seat.status}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Round Trip Section -->
+        <div class="card mb-4" th:if="${booking.roundTrip && roundTrip != null}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Round Trip</h5>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="roundTripSwitch"
+                        th:checked="${booking.roundTrip}" disabled>
+                    <label class="custom-control-label" for="roundTripSwitch"></label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Trip ID:</strong> <span th:text="${roundTrip.trip.tripId}"></span></p>
+                        <p><strong>Round Trip ID:</strong> <span th:text="${roundTrip.roundTripId}"></span></p>
+                        <p><strong>Departure:</strong> <span th:text="${roundTrip.trip.departureTime}"></span></p>
+                        <p><strong>Arrival:</strong> <span th:text="${roundTrip.trip.arrivalTime}"></span></p>
+                        <p><strong>Price:</strong> <span th:text="${roundTrip.trip.price}"></span></p>
+                        <p><strong>Status:</strong>
+                            <span
+                                th:class="'badge ' + 
+                                            (${roundTrip.trip.status == 'waiting'} ? 'badge-warning' : 
+                                            (${roundTrip.trip.status == 'arriving'} ? 'badge-info' : 
+                                            (${roundTrip.trip.status == 'finished'} ? 'badge-success' : 'badge-secondary')))"
+                                th:text="${roundTrip.trip.status}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bus:</strong> <a th:href="@{'/easy-bus/bus-detail/' + ${roundTrip.trip.bus.plate}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${roundTrip.trip.bus.plate}"></a></p>
+                        <p><strong>Driver:</strong> <a
+                                th:href="@{'/easy-bus/driver-detail/' + ${roundTrip.trip.driver.driverId}}"
+                                th:text="${roundTrip.trip.driver.account.fullName}"></a></p>
+                        <p><strong>Controller:</strong> <a
+                                th:href="@{'/easy-bus/controller-detail/' + ${roundTrip.trip.controller.id}}"
+                                th:text="${roundTrip.trip.controller.account.fullName}"></a></p>
+                        <p><strong>Staff:</strong> <a
+                                th:href="@{'/easy-bus/staff-detail/' + ${roundTrip.trip.staff.staff_id}}"
+                                th:text="${roundTrip.trip.staff.account.fullName}"></a></p>
+                    </div>
+                </div>
+                <!-- Seat Selection -->
+                <div class="mt-4">
+                    <h6>Selected Seats (<span th:text="${roundTrip.numberOfSeat}"></span>)</h6>
+                    <div class="seat-grid">
+                        <div th:each="roundTripSeat : ${roundTripSeatDetails}" th:class="'seat ' + 
+                                        (roundTripSeat.status == 'booked' ? 'booked' : 
+                                        (roundTripSeat.status == 'reserved' ? 'reserved' : 'open')) + 
+                                        ' ' + (${roundTripSeat.bookingId == roundTripSeat.bookingId} ? 'chosen' : '')"
+                            th:text="${roundTripSeat.seatNumber}" th:data-toggle="modal"
+                            th:data-seatname="${roundTripSeat.seatNumber}" th:data-seatid="${roundTripSeat.seatId}"
+                            th:data-status="${roundTripSeat.status}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Information -->
+        <!-- <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Billing Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Bill ID:</strong> <span th:text="${bill.billId}"></span></p>
+                        <p><strong>Payment Method:</strong> <span th:class="'badge badge-info'"
+                                th:text="${bill.paymentMethod}"></span></p>
+                        <p><strong>Payment Date:</strong> <span
+                                th:text="${#dates.format(bill.paymentDate, 'dd-MM-yyyy HH:mm')}"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <div th:each="billDetail : ${billDetails}" class="card mb-2">
+                            <div class="card-body py-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Trip ID</small>
+                                        <p class="mb-0" th:text="${billDetail.trip.tripId}"></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Tickets</small>
+                                        <p class="mb-0" th:text="${billDetail.numberOfTicket}"></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Fee</small>
+                                        <p class="mb-0" th:text="${billDetail.fee}"></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Type</small>
+                                        <p class="mb-0" th:text="${billDetail.ticketType}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

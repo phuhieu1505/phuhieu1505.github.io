@@ -1,0 +1,111 @@
+body {
+    background-color: #8aafff;
+    background-image: url("../images/background1.jpg");
+}
+.space_right {
+    margin-right: 80px;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.g-col-4:nth-child(1) {
+    background-color: #1e2a5e;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding: 20px;
+    width: 30%;
+}
+
+.g-col-4:nth-child(2) {
+    background-color: #44527e;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 20px;
+    width: 70%;
+}
+
+.form-label {
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-left: 50px;
+}
+
+.form-control {
+    width: 80%;
+    margin-left: 50px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.form-control::placeholder {
+    font-size: 0.9rem;
+    padding-left: 10px;
+}
+
+.btn-custom {
+    background-color: #fffeef;
+    color: black;
+    font-weight: bold;
+    border: none;
+    width: 40%;
+    margin-right: 80px;
+}
+
+.btn-custom:hover {
+    background-color: #ff6500;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .g-col-4:nth-child(1) {
+        display: none;
+    }
+
+    .g-col-4:nth-child(2) {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+    }
+
+    .form-label {
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        margin-left: 20px;
+    }
+
+    .form-control {
+        width: 85%;
+        margin-left: 20px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .form-control::placeholder {
+        font-size: 0.9rem;
+        padding-left: 10px;
+    }
+
+    .btn-custom {
+        background-color: #fffeef;
+        color: black;
+        font-weight: bold;
+        border: none;
+        width: 85%;
+        margin-left: 20px;
+    }
+    .space_right {
+        margin-right: 0px;
+    }
+}

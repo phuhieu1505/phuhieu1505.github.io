@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<body>
+  <div class="main-menu-content">
+    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN') or hasAuthority('STAFF')">
+        <a th:href="@{dashboard}"><i class="ft-home"></i><span class="menu-title" data-i18n="">Dashboard</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN') or hasAuthority('STAFF')">
+        <a th:href="@{trip-management}"><i class="bi bi-map" style="margin-top:5px;padding-top:4px;"></i><span
+            class="menu-title" data-i18n="">Trip</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN') or hasAuthority('STAFF')">
+        <a th:href="@{route-management}"><i class="bi bi-geo-alt-fill" style="margin-top:5px;padding-top:4px;"></i><span
+            class="menu-title" data-i18n="">Route</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN') or hasAuthority('STAFF')">
+        <a th:href="@{checkpoint-management}"><i class="bi bi-geo-alt" style="margin-top:5px;padding-top:4px;"></i><span
+            class="menu-title" data-i18n="">Checkpoint</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+        <a th:href="@{bus-management}"><i class="bi bi-briefcase" style="margin-top:5px;padding-top:4px;"></i><span
+            class="menu-title" data-i18n="">Bus</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+        <a th:href="@{booking-management}"><i class="bi bi-journal-bookmark"
+            style="margin-top:5px;padding-top:4px;"></i><span class="menu-title" data-i18n="">Booking</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+        <a th:href="@{bill-management}"><i class="bi bi-receipt-cutoff"
+            style="margin-top:5px;padding-top:4px;"></i><span class="menu-title" data-i18n="">Bill</span></a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+        <a th:href="@{account-management}"><i class="bi bi-person" style="margin-top:5px;padding-top:4px;"></i><span
+            class="menu-title" data-i18n="">Account</span></a>
+      </li>
+    </ul>
+  </div>
+</body>

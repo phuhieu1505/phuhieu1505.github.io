@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>Easy Bus</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/responsive.css}" />
+    <link rel="icon" type="image/gif" th:href="@{/images/fevicon.png}" />
+    <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/fontawesome.css}" />
+    <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/owl.theme.default.min.css}" />
+    <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}" />
+    <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+        rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+        media="screen" />
+</head>
+
+<body>
+    <!-- header top section start -->
+    <div class="container">
+        <div class="logo d-flex justify-content-center">
+            <a href="index.html"><img src="/images/EasyBus_processed.png" /></a>
+        </div>
+        <div class="header_section_top">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="custom_menu">
+                        <ul>
+                            <li><a th:href="@{index}">Trang Chủ</a></li>
+                            <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                            <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                            <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                            <li><a th:href="@{contact}">Liên Hệ</a></li>
+                            <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- header top section end -->
+  
+    <div class="container">
+        <div class="contact_section layout_padding_2">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1 class="about_taital">Liên Hệ Với Chúng tôi</h1>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h1 class="about_text_3">Công ty cổ phần xe khách EasyBus</h1>
+                                <div class="about_section_text d-flex">
+                                    <ul class="about_ul">
+                                        <li>
+                                            Địa chỉ: 273 Đ. An Dương Vương, Phường 3, Quận 5, Hồ Chí
+                                            Minh 700000, Việt Nam
+                                        </li>
+                                        <li>Điện thoại: 1800 9999 1111</li>
+                                        <li>Email: easybus@gmail.com</li>
+                                        <li>Website: easybus.com</li>
+                                    </ul>
+                                    <div class="container">
+                                        <iframe
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1648.019456241745!2d106.68124333857247!3d10.759671013934813!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f1b7c3ed289%3A0xa06651894598e488!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTw6BpIEfDsm4!5e0!3m2!1svi!2s!4v1729581178424!5m2!1svi!2s"
+                                            width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
+                                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- user sign in/sign up section end -->
+    <!-- footer section start -->
+    <div class="footer_section layout_padding">
+        <div class="container">
+            <div class="footer_logo">
+                <a href="index.html"><img src="/images/EasyBus_processed2.png" /></a>
+            </div>
+            <div class="input_bt">
+                <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email" />
+                <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+            </div>
+            <div class="footer_menu">
+                <ul>
+                    <li><a th:href="@{index}">Trang Chủ</a></li>
+                    <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                    <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                    <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                    <li><a th:href="@{contact}">Liên Hệ</a></li>
+                    <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                </ul>
+            </div>
+            <div class="location_main">
+                Help Line Number : <a href="#">+84 1800 9999 1111</a>
+            </div>
+        </div>
+    </div>
+    <!-- footer section end -->
+    <!-- copyright section start -->
+    <div class="copyright_section">
+        <div class="container">
+            <p class="copyright_text">
+                © 2024 All Rights Reserved. Design by Nhóm 10
+            </p>
+        </div>
+    </div>
+    <!-- copyright section end -->
+    <!-- Javascript files-->
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+    <script th:src="@{/js/plugin.js}"></script>
+    <!-- sidebar -->
+    <script th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:src="@{/js/custom.js}"></script>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+</body>
+
+</html>

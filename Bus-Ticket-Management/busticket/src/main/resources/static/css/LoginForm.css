@@ -1,0 +1,102 @@
+    body {
+        background-image: url("../images/background1.jpg");
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .g-col-4:nth-child(1) {
+        background-color: #000110;
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+        padding: 20px;
+        width: 60%;
+        height: 70%;
+    }
+
+    .g-col-4:nth-child(2) {
+        background-color: #0C1943;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+        padding: 20px;
+        width: 40%;
+    }
+
+    .form-label {
+        color: #959595;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        margin-left: 50px;
+    }
+
+    .form-control {
+        width: 80%;
+        margin-left: 50px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .form-control::placeholder {
+        font-size: 0.9rem;
+        padding-left: 10px;
+    }
+
+    .forgot-txt {
+        margin-right: 40px;
+    }
+
+    .btn-custom {
+        background-color: #FFFEEF;
+        color: black;
+        font-weight: bold;
+        border: none;
+        width: 80%;
+    }
+
+    .btn-custom:hover {
+        background-color: #F3E6BC;
+        color: black;
+    }
+
+    @media (max-width: 768px) {
+        .g-col-4:nth-child(1) {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .g-col-4:nth-child(2) {
+            display: none;
+        }
+
+        .form-label {
+            color: #959595;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            margin-left: 30px;
+        }
+
+        .form-control {
+            width: 80%;
+            margin-left: 30px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .form-control::placeholder {
+            font-size: 0.9rem;
+            padding-left: 10px;
+        }
+
+        .forgot-txt {
+            margin-right: 25px;
+        }
+    }

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+   <title>Easy Bus</title>
+   <meta name="keywords" content="">
+   <meta name="description" content="">
+   <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}">
+   <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+   <link rel="stylesheet" th:href="@{/css/responsive.css}">
+   <link rel="icon" th:href="@{/images/fevicon.png}" type="image/gif">
+   <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}">
+   <link rel="stylesheet"
+      th:href="@{https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css}"
+      integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+   <!-- fonts -->
+   <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+   <!-- font awesome -->
+   <!-- <link rel="stylesheet" type="text/css" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}"> -->
+   <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}">
+   <!-- owl stylesheets -->
+   <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+      rel="stylesheet">
+   <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+   <link rel="stylesheet" th:href="@{/css/owl.theme.default.min.css}">
+   <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+      media="screen">
+</head>
+
+<body>
+   <!-- banner bg main start -->
+   <div class="banner_bg_main">
+      <!-- header top section start -->
+      <div class="container">
+         <div class="header_section_top">
+            <div class="row">
+               <div class="col-sm-12">
+                  <div class="custom_menu">
+                     <ul>
+                        <li><a th:href="@{index}">Trang Chủ</a></li>
+                        <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                        <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                        <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                        <li><a th:href="@{contact}">Liên Hệ</a></li>
+                        <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- header top section end -->
+      <!-- user sign in/sign up section start -->
+      <div class="col-sm-12">
+         <div class="login_menu">
+            <ul>
+               <li sec:authorize="isAuthenticated()">
+                  <div class="dropdown">
+                     <a href="#">
+                        <i class="bi bi-person-circle"></i>
+                     </a>
+                     <div class="dropdown-content">
+                        <span sec:authentication="name" style="color: #f26522;"></span>
+                        
+                        <ul class="dropdown-info d-flex flex-column">
+                           <li><a th:href="@{booking-history}"></a></li>
+                           <li sec:authorize="hasAuthority('ADMIN') or hasAuthority('STAFF')"> <i class="bi bi-card-list space_right space_bottom_2" style="color:black;"></i><a  href="/easy-bus/dashboard">Dashboard</a></li>
+                           <li ><i class="bi bi-person space_right space_bottom_2" style="color:black;"></i><a th:href="@{user-info}">Profile</a></li>
+                           <li>
+                              <i class="bi bi-box-arrow-in-left space_right space_bottom_2" style="color:black;"></i>
+                              <button th:data-email="${#authentication.name}" onclick="logout()">Logout</button>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </li>
+               <li sec:authorize="isAnonymous()">
+                  <a th:href="@{/auth/login}">
+                     <i class="bi bi-person-circle user-not-in"></i>
+                  </a>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <!-- user sign in/sign up section end -->
+      <!-- banner section start -->
+      <div class="banner_section layout_padding">
+         <div class="container">
+            <div id="my_slider" class="carousel slide" data-ride="carousel">
+               <div class="carousel-inner">
+                  <div class="carousel-item active">
+                     <div class="row">
+                        <div class="col-sm-12">
+                           <h1 class="banner_taital">Bắt Đầu <br>Chuyến đi dễ dàng</h1>
+                           <div class="buynow_bt"><a onclick="scrollToSection()">Đặt Ngay</a></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="carousel-item">
+                     <div class="row">
+                        <div class="col-sm-12">
+                           <h1 class="banner_taital">Đi dễ dàng <br>Đặt tự tin!</h1>
+                           <div class="buynow_bt"><a onclick="scrollToSection()">Đặt Ngay</a></div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- banner section end -->
+   </div>
+   <!-- banner bg main end -->
+
+   <!-- header section start -->
+   <div class="header_section" id="bookingSection">
+      <div class="container">
+         <form class="search-form" id="searchForm" th:action="@{/home/index/search}" method="get">
+            <div class="containt_main d-flex flex-wrap">
+               <div class="row1 justify-content-between d-flex flex-nowrap">
+                  <div class="col-10">
+                     <div class="form-header">
+                        <label>
+                           <input type="radio" name="tripType" value="one-way" th:checked="${tripType == 'one-way'}"
+                              checked onclick="toggleReturnDate()"> Một chiều
+                        </label>
+                        <label>
+                           <input type="radio" name="tripType" value="round-trip"
+                              th:checked="${tripType == 'round-trip'}" onclick="toggleReturnDate()"> Khứ hồi
+                        </label>
+                     </div>
+                  </div>
+                  <div class="col-2">
+                     <a href="#">Hướng dẫn mua vé</a>
+                  </div>
+               </div>
+
+               <div class="row1 d-flex flex-wrap">
+                  <div class="form-group">
+                     <label for="departure">Điểm đi</label>
+                     <input type="text" list="departureList" id="departure" name="departure" th:value="${departure}">
+                     <datalist id="departureList">
+                        <option th:each="province : ${provinces}" th:value="${province}"></option>
+                        <option th:each="city : ${cities}" th:value="${city}"></option>
+                     </datalist>
+                  </div>
+                  <button class="swap-btn" onclick="swapValues()">⇆</button>
+                  <div class="form-group">
+                     <label for="destination">Điểm đến</label>
+                     <input type="text" list="destinationList" id="destination" name="destination"
+                        th:value="${destination}">
+                     <datalist id="destinationList">
+                        <option th:each="province : ${provinces}" th:value="${province}"></option>
+                        <option th:each="city : ${cities}" th:value="${city}"></option>
+                     </datalist>
+                  </div>
+                  <div class="form-group">
+                     <label for="date">Ngày đi</label>
+                     <input type="date" id="date" name="date" th:value="${date}">
+                  </div>
+                  <div class="form-group hide" id="return-date">
+                     <label for="returnDate">Ngày về</label>
+                     <input type="date" id="returnDate" name="returnDate" th:value="${returnDate}">
+                  </div>
+                  <div class="form-group">
+                     <label for="ticketNum">Số vé</label>
+                     <select id="ticketNum" name="ticketNum" th:value="${ticketNum}">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="btn-container d-flex justify-content-center">
+                  <button type="submit" class="search-btn" onclick="validateForm(event)">Tìm chuyến xe</button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+   <!-- header section end -->
+
+   <!-- Famous trip section start -->
+   <div class="fashion_section">
+      <div id="main_slider" class="carousel slide" data-ride="carousel">
+         <div class="carousel-inner">
+            <div class="carousel-item active">
+               <div class="container">
+                  <h1 class="fashion_taital">CHUYẾN ĐI NỔI BẬT</h1>
+                  <h6 class="fashion_taital_2">Được khách hàng tin dùng</h6>
+                  <div class="fashion_section_2">
+                     <div class="row">
+                        <div class="col-lg-4 col-sm-4">
+                           <div class="box_main">
+                              <h4 class="shirt_text">Tuyến xe từ TPHCM</h4>
+                              <div class="tshirt_img"><img src="/images/tphcm.jpg"></div>
+                              <div class="btn_main">
+                                 <div class="buy_bt"><a onclick="setText('TP.Hồ Chí Minh')">Đặt Ngay</a></div>
+                                 <div class="seemore_bt"><a th:href="@{schedule}">Xem Thêm</a></div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4">
+                           <div class="box_main">
+                              <h4 class="shirt_text">Tuyến xe từ Vũng Tàu</h4>
+                              <div class="tshirt_img"><img src="/images/vungtau.jpg"></div>
+                              <div class="btn_main">
+                                 <div class="buy_bt"><a onclick="setText('Vũng Tàu')">Đặt ngay</a></div>
+                                 <div class="seemore_bt"><a th:href="@{schedule}">Xem thêm</a></div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4">
+                           <div class="box_main">
+                              <h4 class="shirt_text">Tuyến xe từ Cần Thơ</h4>
+                              <div class="tshirt_img"><img src="/images/cantho.jpg"></div>
+                              <div class="btn_main">
+                                 <div class="buy_bt"><a onclick="setText('Cần Thơ')">Đặt ngay</a></div>
+                                 <div class="seemore_bt"><a th:href="@{schedule}">Xem thêm</a></div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- fashion section end -->
+
+      <div class="container">
+         <div class="banner_promote justify-content-center"><img src="/images/bus-ticket-banner.png"
+               onclick="scrollToSection()"></div>
+      </div>
+   </div>
+   <!-- footer section start -->
+   <div class="footer_section layout_padding">
+      <div class="container">
+         <div class="footer_logo"><a th:href="@{index}"><img src="/images/EasyBus_processed2.png"></a></div>
+         <div class="input_bt">
+            <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+            <span class="subscribe_bt" id="basic-addon2"><a th:href="@{404}">Subscribe</a></span>
+         </div>
+         <div class="footer_menu">
+            <ul>
+               <li><a th:href="@{index}">Trang Chủ</a></li>
+               <li><a th:href="@{schedule}">Lịch Trình</a></li>
+               <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+               <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+               <li><a th:href="@{contact}">Liên Hệ</a></li>
+               <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+            </ul>
+         </div>
+         <div class="location_main">Help Line Number : <a th:href="@{vnpay}">+84 1800 9999 1111</a></div>
+      </div>
+   </div>
+   <!-- footer section end -->
+   <!-- copyright section start -->
+   <div class="copyright_section">
+      <div class="container">
+         <p class="copyright_text"><a>© 2024 All Rights Reserved. Design by Nhóm 10</a></p>
+      </div>
+   </div>
+   <!-- copyright section end -->
+   <!-- Javascript files-->
+   <script th:src="@{/js/jquery.min.js}"></script>
+   <script th:src="@{/js/popper.min.js}"></script>
+   <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+   <script th:src="@{/js/plugin.js}"></script>
+   <!-- sidebar -->
+   <script th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+   <script th:src="@{/js/custom.js}"></script>
+   <script>
+      function openNav() {
+         document.getElementById("mySidenav").style.width = "250px";
+      }
+
+      function closeNav() {
+         document.getElementById("mySidenav").style.width = "0";
+      }
+
+      // Function to set the default date to today's date
+      function setDefaultDate() {
+         const today = new Date();
+         const yyyy = today.getFullYear();
+         const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+         const dd = String(today.getDate()).padStart(2, '0');
+         const formattedDate = `${yyyy}-${mm}-${dd}`;
+         document.getElementById('date').value = formattedDate;
+      }
+
+      // Function to swap the values of the departure and destination input fields
+      function swapValues() {
+         event.preventDefault();
+         const departureInput = document.getElementById('departure');
+         const destinationInput = document.getElementById('destination');
+         const temp = departureInput.value;
+         departureInput.value = destinationInput.value;
+         destinationInput.value = temp;
+      }
+      // Function to scroll to the booking section
+      function scrollToSection() {
+         const bookingSection = document.getElementById('bookingSection');
+         bookingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      // Function to set text in the departure input field
+      function setText(location) {
+         const departureInput = document.getElementById('departure');
+         departureInput.value = location;
+         scrollToSection(); // Scroll to the booking section after setting the text
+      }
+      function setMinDate() {
+         const today = new Date().toISOString().split('T')[0];
+         document.getElementById('date').setAttribute('min', today);
+         document.getElementById('returnDate').setAttribute('min', today);
+      }
+      function validateForm(event) {
+         const departureDate = new Date(document.getElementById('date').value);
+         const returnDate = new Date(document.getElementById('returnDate').value)
+         const tripType = document.querySelector('input[name="tripType"]:checked').value;
+         const returnDateElement = document.getElementById('returnDate');
+
+         if (tripType === 'round-trip' && (!returnDateElement || !returnDateElement.value)) {
+            alert('Vui lòng chọn ngày về cho chuyến khứ hồi.');
+            event.preventDefault(); // Prevent form submission
+         }
+         else if (tripType === 'round-trip' && returnDate < departureDate) {
+             alert('Ngày về không thể trước ngày đi.');
+             event.preventDefault(); // Prevent form submission
+         }
+         
+      }
+
+      // Set the default date when the page loads
+      window.onload = function () {
+         setDefaultDate();
+         setMinDate();
+         toggleReturnDate();
+      };
+      function toggleReturnDate() {
+         const tripType = document.querySelector('input[name="tripType"]:checked').value;
+         const returnDateElement = document.getElementById('return-date');
+         if (tripType === 'round-trip') {
+             returnDateElement.classList.remove('hide');
+         } else {
+             returnDateElement.classList.add('hide');
+         }
+     }
+      function logout() {
+         const logoutBtn = document.querySelector('button[onclick="logout()"]');
+         const email = logoutBtn.getAttribute('data-email');
+         fetch('/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+         })
+            .then(response => {
+               if (response.ok) {
+                  console.log('Logout successful');
+                  window.localStorage.removeItem('jwtToken');
+                  console.log('JWT token removed from local storage');
+                  window.location.href = '/home/index';
+               } else {
+                  console.error('Logout failed');
+               }
+            })
+            .catch(error => {
+               console.error('Error:', error);
+            });
+      }
+
+   </script>
+</body>
+
+</html>

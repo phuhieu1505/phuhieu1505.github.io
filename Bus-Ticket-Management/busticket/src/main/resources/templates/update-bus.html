@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Bus</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .booked {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Update Bus</h2>
+        <form id="updateBusForm" method="POST" action="/api/bus/update-bus">
+            <div class="form-group">
+                <label for="plate">Bus Plate</label>
+                <input type="text" class="form-control" id="plate" name="plate" th:value="${bus.plate}" maxlength="12"
+                    required readonly />
+            </div>
+            <div class="form-group">
+                <label for="seatType">Seat Type</label>
+                <select class="form-control" id="seatType" name="seatType" required>
+                    <option value="economy" th:selected="${bus.seatType == 'economy'}">Economy</option>
+                    <option value="limousine" th:selected="${bus.seatType == 'limousine'}">Limousine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="numberOfSeat">Number of Seats</label>
+                <input type="number" class="form-control" id="numberOfSeat" name="numberOfSeat"
+                    th:value="${bus.numberOfSeat}" min="1" required />
+            </div>
+            <div id="seatNamesContainer" class="form-group">
+                <div class="seat-grid">
+                    <div th:each="seat : ${seatDetails}" th:class="${seat.booked} ? 'seat booked' : 'seat available'">
+                        <span th:text="${seat.seatName}"></span>
+                        <button type="button" class="delete-btn" onclick="removeSeat(this)">x</button>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Bus</button>
+            <a href="/easy-bus/bus-management" class="btn btn-secondary">Back to Bus Management</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#numberOfSeat").on("input", function () {
+                const numberOfSeat = $(this).val();
+                const seatNamesContainer = $("#seatNamesContainer .seat-grid");
+                seatNamesContainer.empty();
+
+                const seatNames = generateSeatNames(numberOfSeat);
+                seatNames.forEach(seatName => {
+                    const seatDiv = $('<div></div>')
+                        .addClass('seat available')
+                        .append($('<span></span>').text(seatName))
+                        .append($('<button type="button" class="delete-btn">x</button>').on('click', function () {
+                            $(this).parent().remove();
+                        }));
+                    seatNamesContainer.append(seatDiv);
+                });
+            });
+
+            $("#updateBusForm").on("submit", function (event) {
+                event.preventDefault();
+                const seatNames = [];
+                $("#seatNamesContainer .seat-grid .seat").each(function () {
+                    seatNames.push($(this).find('span').text());
+                });
+
+                const formData = {
+                    plate: $("#plate").val(),
+                    seatType: $("#seatType").val(),
+                    numberOfSeat: $("#numberOfSeat").val(),
+                    seatNames: seatNames
+                };
+
+                fetch("/api/bus/update-bus", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.message) {
+                            alert(data.message);
+                            if (data.message === "Bus updated successfully.") {
+                                window.location.href = "/easy-bus/bus-management";
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error updating bus:", error);
+                    });
+            });
+        });
+
+        function generateSeatNames(numberOfSeat) {
+            const seatNames = [];
+            const rows = Math.ceil(numberOfSeat / 2);
+            for (let i = 1; i <= rows; i++) {
+                seatNames.push(`A${i}`);
+                if (seatNames.length < numberOfSeat) {
+                    seatNames.push(`B${i}`);
+                }
+            }
+            return seatNames;
+        }
+
+        function removeSeat(button) {
+            $(button).parent().remove();
+        }
+    </script>
+</body>
+
+</html>

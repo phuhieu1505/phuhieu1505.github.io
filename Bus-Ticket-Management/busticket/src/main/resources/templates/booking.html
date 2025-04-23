@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- basic -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- mobile metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <!-- site metas -->
+  <title>Easy Bus</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!--Bootstrap icon -->
+  <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}">
+  <!-- bootstrap css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+  <!-- style css -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <!-- Responsive-->
+  <link rel="stylesheet" th:href="@{/css/responsive.css}">
+  <!-- fevicon -->
+  <link rel="icon" type="image/gif" />
+  <!-- Scrollbar Custom CSS -->
+  <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}">
+  <!-- Tweaks for older IEs-->
+  <link rel="stylesheet"
+    th:href="@{https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css}"
+    integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+  <!-- fonts -->
+  <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+  <!-- font awesome -->
+  <!-- <link rel="stylesheet" type="text/css" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}"> -->
+  <!--  -->
+  <link rel="stylesheet" th:href="@{/css/fontawesome.css/fontawesome.min.css}">
+  <!-- owl stylesheets -->
+  <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+    rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+  <link rel="stylesoeet" th:href="@{/css/owl.theme.default.min.css}">
+  <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+    media="screen">
+</head>
+
+<body>
+  <!-- header top section start -->
+  <div class="logo_2 d-flex justify-content-center">
+    <a href="/home/index"><img th:src="@{/images/EasyBus_processed.png}" /></a>
+  </div>
+  <!-- header top section end -->
+
+  <!-- booking section start -->
+  <div class="booking_section">
+    <div class="all-container container d-flex flex-nowrap ">
+      <div class="choose_seat trip-card d-flex flex-column justify-content-center col-sm-8">
+        <h3 class="full">Chọn ghế</h3>
+        <div>
+          <strong>Seat Type:</strong> <span th:text="${selectedTrip.getBus().getSeatType()}"></span>
+        </div>
+        <ul class="showcase">
+          <li>
+            <div class="seat"></div>
+            <small>Còn Trống</small>
+          </li>
+          <li>
+            <div class="seat selected"></div>
+            <small>Đang chọn</small>
+          </li>
+          <li>
+            <div class="seat booked"></div>
+            <small>Đã Bán</small>
+          </li>
+        </ul>
+
+        <div th:switch="${seatType}">
+
+          <!-- Seat container for economy -->
+          <div th:case="'economy'">
+            <div class="floor-container d-flex justify-content-center">
+              <div class="left_side">Dãy Trái</div>
+              <div class="right_side">Dãy Phải</div>
+            </div>
+            <div class="seat_container ">
+              <div class="left-side">
+                <div th:each="i: ${#numbers.sequence(0, (firstFloor.size() / 2) - 1)}" class="row_2">
+                  <span th:each="seatReservation: ${firstFloor.subList(i * 2, i * 2 + 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+              </div>
+              <div class="right-side">
+                <div th:each="i: ${#numbers.sequence(0, (secondFloor.size() / 2) - 1)}" class="row_2">
+                  <span th:each="seatReservation: ${secondFloor.subList(i * 2, i * 2 + 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Seat container for limousine -->
+          <div th:case="'limousine'">
+            <div class="floor-container d-flex justify-content-center">
+              <div class="floor_1">Tầng dưới</div>
+              <div class="floor_2">Tầng trên</div>
+            </div>
+            <div class="seat_container">
+              <div class="first_floor">
+                <!-- First row with exactly 2 seats -->
+                <div class="row_2">
+                  <span
+                    th:each="seatReservation: ${firstFloor.subList(0, 2 > firstFloor.size() ? firstFloor.size() : 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+                <!-- Subsequent rows with 3 seats each -->
+                <div th:each="i: ${#numbers.sequence(1, ((firstFloor.size() - 2) / 3) + 1)}" class="row_2">
+                  <span
+                    th:each="seatReservation: ${firstFloor.subList(i * 3 - 1, i * 3 + 2 > firstFloor.size() ? firstFloor.size() : i * 3 + 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+              </div>
+
+              <div class="second_floor">
+                <!-- First row with exactly 2 seats -->
+                <div class="row_2">
+                  <span
+                    th:each="seatReservation: ${secondFloor.subList(0, 2 > secondFloor.size() ? secondFloor.size() : 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+                <!-- Subsequent rows with 3 seats each -->
+                <div th:each="i: ${#numbers.sequence(1, ((secondFloor.size() - 2) / 3) + 1)}" class="row_2">
+                  <span
+                    th:each="seatReservation: ${secondFloor.subList(i * 3 - 1, i * 3 + 2 > secondFloor.size() ? secondFloor.size() : i * 3 + 2)}"
+                    th:class="${'seat ' + (seatReservation.status == 'booked' ? 'booked' : '')}"
+                    th:id="${seatReservation.seat.getId()}" th:text="${seatReservation.seat.getSeatName()}"
+                    th:data-name="${seatReservation.seat.getSeatName()}"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Add a default case to help debug -->
+          <div th:case="*">
+            <p>No matching seat type found. Current type: <span th:text="${seatType}"></span></p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="confirm_info trip-card d-flex align-self-start flex-column col-sm-4">
+        <h3 class="full text-dark">Thông tin lượt đi</h3>
+        <div class="full d-flex justify-content-between">
+          <h4 class="full d-flex   ">Tuyến xe</h4>
+          <span th:text="${selectedTrip.route.name}" class="full d-flex justify-content-end text_right "></span>
+        </div>
+        <div class="d-flex justify-content-between full">
+          <h4 class="full">Thời gian xuất bến</h4>
+          <span th:text="${#temporals.format(selectedTrip.departureTime,'yyyy-MM-dd HH:mm')}"
+            class="full d-flex justify-content-end"></span>
+        </div>
+        <div class="d-flex justify-content-between full">
+          <h4 class="full">Số lượng ghế</h4>
+          <h4 class="text d-flex flex-nowrap">
+            <span class="space_right" id="count">0 </span> ghế
+          </h4>
+        </div>
+        <div class="d-flex justify-content-between full">
+          <h4 class="full">Số ghế</h4>
+          <span class="full d-flex justify-content-end" id="seat_number"></span>
+        </div>
+        <div class="d-flex justify-content-between full">
+          <h4 class="full">Tổng tiền lượt đi</h4>
+          <h4 class="text d-flex flex-nowrap">
+            <span class="space_right" id="total"> </span> $
+          </h4>
+        </div>
+        <input type="hidden" id="ticketPrice" th:value="${selectedTrip.price}">
+
+      </div>
+    </div>
+  </div>
+  <!-- booking section end -->
+  <!--User information start-->
+  <div class="info_section">
+    <div class="container customer-container d-flex flex-nowrap">
+      <div class="choose_seat customer-info box-card d-flex  flex-wrap justify-content-start col-sm-8">
+        <div class="full d-flex justify-content-between ">
+          <h3 class="full d-flex text-dark ">Thông tin khách hàng</h3>
+          <h3 class="full d-flex justify-content-center text-danger rule-header">Điều khoản lưu ý</h3>
+        </div>
+
+        <div class="full d-flex flex-nowrap user-info-container ">
+          <div class="d-flex flex-column col-sm-6 user-info">
+            <div class="form-group">
+              <label for="name">Họ và tên</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group ">
+              <label for="phone">Số điện thoại</label>
+              <input type="text" class="form-control " id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+          </div>
+          <div class="d-flex flex-column rule">
+            <h5>
+              <p>(*)Thông tin vé: Vui lòng kiểm tra kỹ thông tin vé (lịch trình, điểm đón/trả, giá vé) trước khi thanh
+                toán.</p>
+              <p>(*)Thanh toán và hoàn vé: Vé đã thanh toán không hoàn lại tiền, trừ trường hợp xe hủy chuyến hoặc có
+                thông báo đặc biệt từ nhà xe.</p>
+              <p>(*)Điều kiện lên xe: Khách hàng cần mang theo vé điện tử hoặc mã đặt vé và giấy tờ tùy thân khi lên xe.
+              </p>
+              <p>(*)Quy định hành lý: Khách hàng tự bảo quản hành lý cá nhân và tuân thủ quy định về hành lý của nhà xe.
+              </p>
+            </h5>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="container d-flex ">
+    <div class="choose_seat box-card d-flex  flex-wrap justify-content-between col-sm-8">
+      <h4 class="text d-flex flex-nowrap">
+        <span class="space_left about_taital_3" id="price"> </span> <span class="about_taital_3"> $</span>
+      </h4>
+      <div class="d-flex ">
+        <button type="button" class="payment-button" onclick="history.back()">Hủy</button>
+        <form id="form-test">
+          <input type="hidden" id="trip_id" th:value="${selectedTrip.tripId}" />
+          <button type="submit" class="payment-button">Thanh Toán</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- footer section start -->
+  <div class="footer_section layout_padding">
+    <div class="container">
+      <div class="footer_logo"><a th:href="@{index}"><img src="/images/EasyBus_processed2.png"></a></div>
+      <div class="input_bt">
+        <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+        <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+      </div>
+      <div class="footer_menu">
+        <ul>
+          <li><a th:href="@{index}">Trang Chủ</a></li>
+          <li><a th:href="@{schedule}">Lịch Trình</a></li>
+          <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+          <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+          <li><a th:href="@{contact}">Liên Hệ</a></li>
+          <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+        </ul>
+      </div>
+      <div class="location_main">Help Line Number : <a href="#">+84 1800 9999 1111</a></div>
+    </div>
+  </div>
+  <!-- footer section end -->
+  <!-- copyright section start -->
+  <div class="copyright_section">
+    <div class="container">
+      <p class="copyright_text"><a>© 2024 All Rights Reserved. Design by Nhóm 10</a></p>
+    </div>
+  </div>
+  <!-- copyright section end -->
+  <!-- Javascript files-->
+  <script th:src="@{/js/jquery.min.js}"></script>
+  <script th:src="@{/js/popper.min.js}"></script>
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+  <script th:src="@{/js/plugin.js}"></script>
+  <script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const container = document.querySelector(".seat_container");
+      const seats = document.querySelectorAll(".row_2 .seat:not(.booked)");
+      const count = document.getElementById("count");
+      const total = document.getElementById("total");
+      const price = document.getElementById("price");
+      const seatNumber = document.getElementById("seat_number");
+      const ticketPrice = document.getElementById("ticketPrice").value;
+      const seatIdsInput = document.getElementById("seat_ids");
+      const totalPriceInput = document.getElementById("total_price");
+
+      // Clear local storage on page load to avoid using outdated data
+      localStorage.removeItem("selectedSeats");
+      populateUI();
+
+      const updateSelectedCount = () => {
+        const selectedSeats = document.querySelectorAll(".row_2 .seat.selected");
+
+        const seatsIndex = [...selectedSeats].map((seat) => {
+          return [...seats].indexOf(seat);
+        });
+
+        localStorage.setItem("selectedSeats", JSON.stringify(seatsIndex));
+
+        const selectedSeatsCount = selectedSeats.length;
+
+        count.innerText = selectedSeatsCount;
+        total.innerText = (selectedSeatsCount * ticketPrice).toFixed(2);
+        price.innerText = (selectedSeatsCount * ticketPrice).toFixed(2);
+
+
+        // Update seat numbers
+        const selectedSeatNumbers = [...selectedSeats].map(seat => seat.dataset.name).join(', ');
+        seatNumber.innerText = selectedSeatNumbers;
+
+        const selectedSeatID = [...selectedSeats].map(seat => seat.id).join(', ');
+
+        // Update hidden inputs
+        //seatIdsInput.value = selectedSeatID;
+        //totalPriceInput.value = (selectedSeatsCount * ticketPrice).toFixed(2);; 
+      };
+
+      function populateUI() {
+        const selectedSeats = JSON.parse(localStorage.getItem("selectedSeats"));
+
+        if (selectedSeats !== null && selectedSeats.length > 0) {
+          seats.forEach((seat, index) => {
+            if (selectedSeats.indexOf(index) > -1) {
+              seat.classList.add("selected");
+            }
+          });
+        }
+      }
+
+      container.addEventListener("click", (e) => {
+        if (
+          e.target.classList.contains("seat") &&
+          !e.target.classList.contains("booked")
+        ) {
+          const selectedSeatsCount = document.querySelectorAll(".row_2 .seat.selected").length;
+          if (e.target.classList.contains("selected")) {
+            e.target.classList.remove("selected");
+          } else if (selectedSeatsCount < 5) {
+            e.target.classList.add("selected");
+          } else {
+            alert("Bạn đã chon đủ số ghế.");
+          }
+          updateSelectedCount();
+        }
+      });
+
+
+
+      const submitForm = document.getElementById('form-test');
+      submitForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const selectedSeats = document.querySelectorAll(".row_2 .seat.selected");
+        const listselectedSeatID = [...selectedSeats].map(seat => seat.id);
+        const formData = new FormData(submitForm);
+        console.log(document.getElementById('trip_id').value);
+        console.log(document.getElementById('count').innerText);
+        console.log(listselectedSeatID);
+        console.log(document.getElementById('total').innerText);
+        //Check for input field: name, phone, email
+        if (document.getElementById('email').value == "" || document.getElementById('email').value.trim() == "") {
+          alert("Vui lòng nhập địa chỉ email.");
+          return;
+        }
+        const ticket = {
+          cusDetail: {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+          },
+          tripDetail: {
+            tripId: parseInt(document.getElementById('trip_id').value),
+            numberOfSeat: parseInt(document.getElementById('count').innerText),
+            seatNumbers: listselectedSeatID,
+            price: parseFloat(document.getElementById('total').innerText),
+          },
+          paymentDay: null
+
+        };
+        document.cookie = "bookingInfo=" + JSON.stringify(ticket) + "; path=/; max-age=3600";
+        document.cookie = "tripType=one-way; path=/; max-age=3600"; // Lưu cookie có thời hạn 1 giờ
+        fetch('/home/index/booking/oneway-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ticket)
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Có lỗi xảy ra khi tạo link thanh toán.");
+            }
+            return response.text(); // Lấy link thanh toán từ response
+          })
+          .then(paymentLink => {
+            // Redirect người dùng tới link thanh toán
+            window.location.href = paymentLink;
+          })
+          .catch(error => console.error(error));
+      });
+
+      updateSelectedCount();
+    });
+  </script>
+</body>
+
+</html>

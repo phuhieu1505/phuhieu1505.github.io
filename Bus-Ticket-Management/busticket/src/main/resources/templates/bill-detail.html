@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .breadcrumb {
+            background-color: #e9ecef;
+            border-radius: 0.25rem;
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-bottom: none;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+
+        .card-body {
+            background-color: white;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+        .btn-outline-primary {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: #ffc107;
+        }
+
+        .badge-info {
+            background-color: #17a2b8;
+        }
+
+        .badge-success {
+            background-color: #28a745;
+        }
+
+        .badge-secondary {
+            background-color: #6c757d;
+        }
+
+        .custom-switch .custom-control-input:checked~.custom-control-label::before {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/easy-bus/bill-management">Bill Management</a></li>
+                <li class="breadcrumb-item active">Bill Details</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="container mt-4">
+        <h2>Bill Detail</h2>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Customer ID:</strong> <span th:text="${customer.customerId}"></span></p>
+                <p><strong>Name:</strong> <span th:text="${customer.name}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${customer.email}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${customer.phone}"></span></p>
+                <p><strong>Total Price:</strong> <span th:text="${totalPrice}"></span></p>
+                <!-- <button class="btn btn-primary btn-sm" onclick="sendMail('${customer.email}')">Send Email</button> -->
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Bill Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Bill ID:</strong> <span th:text="${bill.billId}"></span></p>
+                <p><strong>Payment Method:</strong> <span th:text="${bill.paymentMethod}"></span></p>
+                <p><strong>Payment Date:</strong> <span th:text="${bill.paymentDate}"></span></p>
+            </div>
+        </div>
+
+        <!-- Bill Details Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Bill Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Number of Tickets</th>
+                            <th>Fee</th>
+                            <th>Ticket Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detail : ${billDetails}">
+                            <td th:text="${detail.trip.tripId}"></td>
+                            <td th:text="${detail.numberOfTicket}"></td>
+                            <td th:text="${detail.fee}"></td>
+                            <td th:text="${detail.ticketType}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Trip Information Section -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Trip Information</h5>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="tripSwitch" th:checked="true" disabled>
+                    <label class="custom-control-label" for="tripSwitch"></label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Trip ID:</strong> <a th:href="@{'/easy-bus/trip-detail/' + ${trip.tripId}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${trip.tripId}"></a></p>
+                        <p><strong>Departure Time:</strong> <span th:text="${trip.departureTime}"></span></p>
+                        <p><strong>Arrival Time:</strong> <span th:text="${trip.arrivalTime}"></span></p>
+                        <p><strong>Price:</strong> <span th:text="${trip.price}"></span></p>
+                        <p><strong>Status:</strong>
+                            <span th:class="'badge ' + 
+                                (${trip.status == 'waiting'} ? 'badge-warning' : 
+                                (${trip.status == 'arriving'} ? 'badge-info' : 
+                                (${trip.status == 'finished'} ? 'badge-success' : 'badge-secondary')))"
+                                th:text="${trip.status}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bus:</strong> <a th:href="@{'/easy-bus/bus-detail/' + ${trip.bus.plate}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${trip.bus.plate}"></a></p>
+                        <p><strong>Driver:</strong> <a th:href="@{'/easy-bus/driver-detail/' + ${trip.driver.driverId}}"
+                                th:text="${trip.driver.account.fullName}"></a></p>
+                        <p><strong>Controller:</strong> <a
+                                th:href="@{'/easy-bus/controller-detail/' + ${trip.controller.id}}"
+                                th:text="${trip.controller.account.fullName}"></a></p>
+                        <p><strong>Staff:</strong> <a th:href="@{'/easy-bus/staff-detail/' + ${trip.staff.staff_id}}"
+                                th:text="${trip.staff.account.fullName}"></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round Trip Section -->
+        <div class="card mb-4" th:if="${roundTrip != null}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Round Trip</h5>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="roundTripSwitch" th:checked="true" disabled>
+                    <label class="custom-control-label" for="roundTripSwitch"></label>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Trip ID:</strong> <a th:href="@{'/easy-bus/trip-detail/' + ${roundTrip.tripId}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${roundTrip.tripId}"></a></p>
+                        <p><strong>Departure:</strong> <span th:text="${roundTrip.departureTime}"></span></p>
+                        <p><strong>Arrival:</strong> <span th:text="${roundTrip.arrivalTime}"></span></p>
+                        <p><strong>Price:</strong> <span th:text="${roundTrip.price}"></span></p>
+                        <p><strong>Status:</strong>
+                            <span th:class="'badge ' + 
+                                (${roundTrip.status == 'waiting'} ? 'badge-warning' : 
+                                (${roundTrip.status == 'arriving'} ? 'badge-info' : 
+                                (${roundTrip.status == 'finished'} ? 'badge-success' : 'badge-secondary')))"
+                                th:text="${roundTrip.status}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bus:</strong> <a th:href="@{'/easy-bus/bus-detail/' + ${roundTrip.bus.plate}}"
+                                class="btn btn-sm btn-outline-primary" th:text="${roundTrip.bus.plate}"></a></p>
+                        <p><strong>Driver:</strong> <a
+                                th:href="@{'/easy-bus/driver-detail/' + ${roundTrip.driver.driverId}}"
+                                th:text="${roundTrip.driver.account.fullName}"></a></p>
+                        <p><strong>Controller:</strong> <a
+                                th:href="@{'/easy-bus/controller-detail/' + ${roundTrip.controller.id}}"
+                                th:text="${roundTrip.controller.account.fullName}"></a></p>
+                        <p><strong>Staff:</strong> <a
+                                th:href="@{'/easy-bus/staff-detail/' + ${roundTrip.staff.staff_id}}"
+                                th:text="${roundTrip.staff.account.fullName}"></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <script>
+        function sendMail() {
+            // Extract billId from URL
+            const urlPath = window.location.pathname;
+            const billId = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+
+            fetch("/api/bill/send-email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    billId: billId
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        alert("Email sent successfully.");
+                    } else {
+                        alert("Failed to send email: " + data.errorMessage);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+    </script> -->
+</body>
+
+</html>

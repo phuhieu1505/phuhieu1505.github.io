@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-text-direction="ltr">
+
+<head>
+    <title>Bill Management</title>
+    <div th:insert="~{dashboard-header.html}"></div>
+    <link rel="stylesheet" th:href="@{/theme-assets/css/pagination.css}" />
+    <style>
+        /*.search-box {*/
+        /*    display: flex;*/
+        /*    flex-wrap: wrap;*/
+        /*    align-items: center;*/
+        /*    background-color: #f1f1f1;*/
+        /*    border-radius: 10px;*/
+        /*    padding: 15px;*/
+        /*    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+        /*    margin-bottom: 20px;*/
+        /*}*/
+
+        /*.search-box .form-group {*/
+        /*    flex: 1;*/
+        /*    margin-right: 15px;*/
+        /*}*/
+
+        /*.search-box .form-group label {*/
+        /*    display: block;*/
+        /*    margin-bottom: 5px;*/
+        /*    font-weight: bold;*/
+        /*}*/
+
+        /*.search-box .form-group input,*/
+        /*.search-box .form-group .form-control {*/
+        /*    width: 100%;*/
+        /*    padding: 10px;*/
+        /*    border: 1px solid #ccc;*/
+        /*    border-radius: 5px;*/
+        /*    font-size: 16px;*/
+        /*}*/
+
+        /*.search-box .btn-search {*/
+        /*    background-color: #007bff;*/
+        /*    border: none;*/
+        /*    color: white;*/
+        /*    padding: 10px 20px;*/
+        /*    border-radius: 5px;*/
+        /*    cursor: pointer;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    justify-content: center;*/
+        /*    font-size: 16px;*/
+        /*}*/
+
+        /*.search-box .btn-search i {*/
+        /*    margin-right: 5px;*/
+        /*}*/
+
+        /*.search-box .btn-search:hover {*/
+        /*    background-color: #0056b3;*/
+        /*}*/
+
+        /* Search Form v1*/
+        #searchForm {
+            display: flex;
+            flex-direction: column; /* Các thành phần trong form sẽ xếp theo cột */
+            gap: 15px; /* Khoảng cách giữa các thành phần */
+            padding: 15px; /* Thêm không gian bên trong form */
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+            gap: 10px; /* Khoảng cách giữa các thành phần */
+            width: 100%;
+        }
+
+        .input-search {
+            flex: 1; /* Input tìm kiếm chiếm toàn bộ không gian còn lại */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-search {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Căn nhãn và input về bên trái */
+            gap: 5px;
+            width: 100%; /* Các form-group chiếm toàn bộ chiều rộng */
+        }
+
+        .form-group label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%; /* Input chiếm toàn bộ chiều rộng của form-group */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click"
+    data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <nav th:insert="~{navigation-bar.html}"></nav>
+    <div th:insert="~{main-menu.html}"></div>
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-wrapper-before"></div>
+            <div class="content-header row">
+                <div class="content-header-left col-md-4 col-12 mb-2">
+                    <h3 class="content-header-title"></h3>
+                </div>
+                <div class="content-header-right col-md-8 col-12">
+                    <div class="breadcrumbs-top float-md-right">
+                        <div class="breadcrumb-wrapper mr-1">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"></a></li>
+                                <li class="breadcrumb-item active"></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Bill</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+<!--                                        <li>-->
+<!--                                            <a data-action="search" title="Search"><i class="ft-search"></i></a>-->
+<!--                                        </li>-->
+                                        <a th:href="@{/easy-bus/new-bill}" data-action="add-bill" title="Add Bill">
+                                            <i class="ft-plus"></i>
+                                        </a>
+                                    </ul>
+                                </div>
+                                <form id="searchForm" method="get" onsubmit="handleSearch(event)">
+                                    <div class="search-box" id="searchBox">
+                                        <input type="text" id="searchField" name="searchValue" class="input-search" placeholder="Search trip..." />
+                                        <button class="btn-search" id="searchButton" type="submit">
+                                            <i class="ft-search"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Các form-group nằm ngoài search-box, sẽ được đặt dưới cùng -->
+                                    <div class="form-group">
+                                        <label for="startDate">Start Date</label>
+                                        <input type="datetime-local" class="form-control" id="startDate" name="startDate" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="endDate">End Date</label>
+                                        <input type="datetime-local" class="form-control" id="endDate" name="endDate" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Customer Name</th>
+                                                <th scope="col">Customer Email</th>
+                                                <th scope="col">Payment Method</th>
+                                                <th scope="col">Payment Date</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="billTableBody">
+                                            <tr th:each="bill : ${bills}">
+                                                <td th:text="${bill.billId}"></td>
+                                                <td th:text="${bill.customer.name}"></td>
+                                                <td th:text="${bill.customer.email}"></td>
+                                                <td th:text="${bill.paymentMethod}"></td>
+                                                <td th:text="${bill.paymentDate}"></td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm" title="View Details"
+                                                        onclick="viewBillDetails('${bill.billId}')">
+                                                        <i class="ft-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-warning btn-sm" title="Update Bill"
+                                                        onclick="updateBill('${bill.billId}')">
+                                                        <i class="ft-settings"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm" title="Delete bill"
+                                                        onclick="deleteBill('${bill.billId}')">
+                                                        <i class="ft-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="pagination">
+                                        <ul class="pagination-list" id="paginationControls">
+                                            <li th:if="${currentPage > 0}">
+                                                <a onclick="loadBills('${currentPage - 1}')"
+                                                    aria-label="Previous">&laquo;</a>
+                                            </li>
+                                            <li th:each="pageNum : ${pageNumbers}"
+                                                th:class-append="${pageNum == currentPage} ? 'active'">
+                                                <a onclick="loadBills('${pageNum}')" th:text="${pageNum}"></a>
+                                            </li>
+                                            <li th:if="${currentPage < totalPages - 1}">
+                                                <a onclick="loadBills('${currentPage + 1}')"
+                                                    aria-label="Next">&raquo;</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div th:insert="~{dashboard-footer.html}"></div>
+    </footer>
+
+    <script th:src="@{/theme-assets/vendors/js/vendors.min.js}" type="text/javascript"></script>
+    <script th:src="@{/theme-assets/js/core/app-menu-lite.js}" type="text/javascript"></script>
+    <script th:src="@{/theme-assets/js/core/app-lite.js}" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            loadBills(0);
+        });
+
+        function handleSearch(event) {
+            event.preventDefault();
+            const searchValue = document.getElementById('searchField').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            loadBills(0, searchValue, startDate, endDate);
+        }
+
+        function loadBills(page, searchTerm = "", startDate = "", endDate = "") {
+            $.ajax({
+                url: "/api/bill/bills",
+                data: { page: page, size: 15, searchValue: searchTerm, startDate: startDate, endDate: endDate },
+                success: function (data) {
+                    var bills = data.bills;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    $("#billTableBody").empty();
+
+                    bills.forEach(function (bill) {
+                        $("#billTableBody").append(
+                            '<tr>' +
+                            '<td>' + bill.billId + '</td>' +
+                            '<td>' + bill.customer.name + '</td>' +
+                            '<td>' + bill.customer.email + '</td>' +
+                            '<td>' + bill.paymentMethod + '</td>' +
+                            '<td>' + bill.paymentDate + '</td>' +
+                            '<td>' +
+                            '<button class="btn btn-primary btn-sm" title="View Details" onclick="viewBillDetails(' + bill.billId + ')">' +
+                            '<i class="ft-eye"></i>' +
+                            '</button>' +
+                            '<button class="btn btn-warning btn-sm" title="Update Bill" onclick="updateBill(' + bill.billId + ')">' +
+                            '<i class="ft-settings"></i>' +
+                            '</button>' +
+                            '<button class="btn btn-danger btn-sm" title="Delete bill" onclick="deleteBill(' + bill.billId + ')">' +
+                            '<i class="ft-trash"></i>' +
+                            '</button>' +
+                            '</td>' +
+                            '</tr>'
+                        );
+                    });
+
+                    $("#paginationControls").empty();
+
+                    if (currentPage > 0) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadBills(' +
+                            (currentPage - 1) +
+                            ', \'' + searchTerm + '\', \'' + startDate + '\', \'' + endDate + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadBills(0, \'' + searchTerm + '\', \'' + startDate + '\', \'' + endDate + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#paginationControls").append("<li><span>...</span></li>");
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#paginationControls").append(
+                            '<li class="' +
+                            (i === currentPage ? "active" : "") +
+                            '"><a onclick="loadBills(' +
+                            i +
+                            ', \'' + searchTerm + '\', \'' + startDate + '\', \'' + endDate + '\')">' +
+                            (i + 1) +
+                            "</a></li>"
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#paginationControls").append("<li><span>...</span></li>");
+                        }
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadBills(' +
+                            (totalPages - 1) +
+                            ', \'' + searchTerm + '\', \'' + startDate + '\', \'' + endDate + '\')">' +
+                            totalPages +
+                            "</a></li>"
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadBills(' +
+                            (currentPage + 1) +
+                            ', \'' + searchTerm + '\', \'' + startDate + '\', \'' + endDate + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+            });
+        }
+
+        function viewBillDetails(billId) {
+            window.location.href = "/easy-bus/bill-detail/" + billId;
+        }
+
+        function updateBill(billId) {
+            window.location.href = "/easy-bus/update-bill/" + billId;
+        }
+
+        function deleteBill(billId) {
+            if (confirm("Are you sure you want to delete this bill?")) {
+                fetch("/api/bill/delete-bill/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ billId: billId }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.message) {
+                            alert(data.message);
+                            if (data.message === "Bill deleted successfully.") {
+                                loadBills(0);
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting bill:", error);
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>

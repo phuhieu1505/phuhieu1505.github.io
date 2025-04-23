@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="form1" action="/booking/testing" method="post">
+    <div class="booking-form">
+        <h3>Khong Dang Nhap</h3>
+        <div type="hidden">
+            <span>Customer ID:</span>
+            <span name="customer_id"></span>
+        </div>
+        <div>
+            <span>Route:</span>
+            <span>SG-TV</span>
+        </div>
+        <div>
+            <span>Số lượng ghế</span>
+            <span id="number_of_seats">2</span>
+        </div>
+        <div type="hidden">
+            <span>Trip ID:</span>
+            <span id="trip_id">1</span>
+        </div>
+        <div>
+            <h3>Pick and Drop</h3>
+            <label>Pickup:</label>
+            <input type="text" name="pickup_point">
+            <label>Drop:</label>
+            <input type="text" name="dropoff_point">
+        </div>
+        <div>
+            <h3>Thong tin nhan ve</h3>
+            <label>Name:</label>
+            <input type="text" name="name">
+            <label>Email:</label>
+            <input type="email" name="email">
+        </div>
+        <div type="hidden">
+            <span>Number of seats:</span>
+            <input type="hidden" name="seat1" value="A15" />
+            <input type="hidden" name="seat2" value="A16" />
+        </div>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+
+<tr th:each="trip: ${trips}">
+    <td th:text="${trip?.tripId}" />
+</tr>
+
+</body>
+</html>
+
+<script>
+    const submitForm = document.getElementById('form1');
+    submitForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(submitForm);
+        const ticket = {
+            tripDetail: {
+                trip_id: document.getElementById('trip_id').innerText,
+                number_of_seat: document.getElementById('number_of_seats').innerText,
+                pickup_point: formData.get('pickup_point'),
+                dropoff_point: formData.get('dropoff_point'),
+            },
+            cusDetail: {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                seat1: formData.get('seat1'),
+                seat2: formData.get('seat2')
+            }
+        };
+        fetch('/booking/testing', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(ticket)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+    });
+</script>

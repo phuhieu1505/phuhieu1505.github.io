@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+    <title>Easy Bus</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--Bootstrap icon -->
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <!-- style css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <!-- Responsive-->
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
+    <!-- fevicon -->
+    <link rel="icon" th:href="@{/images/fevicon.png}" type="image/gif" />
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}">
+    <!-- Tweaks for older IEs-->
+    <link rel="stylesheet"
+        th:href="@{https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css}"
+        integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+    <!-- fonts -->
+    <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+    <!-- font awesome -->
+    <!-- <link rel="stylesheet" type="text/css" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}"> -->
+    <!--  -->
+    <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}">
+    <!-- owl stylesheets -->
+    <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+    <link rel="stylesoeet" th:href="@{/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+        media="screen">
+</head>
+
+<body>
+    <div class="d-flex justify-content-center">
+        <i class="bi bi-check-circle-fill finish-check "></i>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h1 class="finish-title">Mua vé xe thành công</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        <p class="about_text_4  ">Hóa đơn đang được gửi đến Email của bạn</p>
+    </div>
+    <div class="container">
+        <div class="about_section">
+            <div class="d-flex justify-content-center box-custom flex-wrap">
+                <div class="info-title">
+                    <h1>THÔNG TIN MUA VÉ</h1>
+                </div>
+                <div class="d-flex bill-info flex-row full ">
+                    <div class="info-row-1 full">
+                        <h4 class="d-flex flex-nowrap">Họ và Tên:<span class="d-flex justify-content-start space_left"
+                                id="customerName"></span></h4>
+                        <h4 class="d-flex flex-nowrap">Số điện thoại:<span
+                                class="d-flex justify-content-start space_left" id="phoneNumber"></span></h4>
+                        <h4 class="d-flex flex-nowrap">Email:<span class="d-flex justify-content-start space_left"
+                                id="email"></span></h4>
+                    </div>
+                    <div class="info-row-2 full">
+                        <h4 class="d-flex flex-nowrap">Tổng giá vé:<span class="d-flex justify-content-start space_left"
+                                id="totalAmount"></span></h4>
+                        <h4 class="d-flex flex-nowrap">PTTT: <span class="d-flex justify-content-start space_left">
+                                VNPAY</span></h4>
+                        <h4 class="d-flex flex-nowrap">Trạng thái: <span
+                                class="d-flex justify-content-start text-success space_left"> Thanh Toán Thành
+                                Công</span></h4>
+                    </div>
+                    <input type="hidden" id="payment_date" name="payment_date" th:value="${paymentTime}">
+                </div>
+            </div>
+            <button class="btn btn-primary d-flex justify-content-center full"
+                onclick="window.location.href='/home/index'">Trở về trang chủ</button>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    function getCookie(name) {
+        let cookieArr = document.cookie.split(";");
+        for (let i = 0; i < cookieArr.length; i++) {
+            let cookiePair = cookieArr[i].split("=");
+            if (name === cookiePair[0].trim()) {
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+        return null;
+    }
+    // Retrieve the bookingInfo cookie
+    const bookingInfo = JSON.parse(getCookie('bookingInfo'));
+    console.log('bookingInfo:', bookingInfo);
+
+    const bookingList = JSON.parse(getCookie('bookingList'));
+    console.log('bookingList:', bookingList);
+
+    // Retrieve the tripType cookie
+    const tripType = getCookie('tripType');
+    console.log('tripType:', tripType);
+    const total = document.getElementById('totalAmount');
+    if (bookingInfo) {
+        document.getElementById('customerName').innerText = bookingInfo.cusDetail.name;
+        document.getElementById('phoneNumber').innerText = bookingInfo.cusDetail.phone;
+        document.getElementById('email').innerText = bookingInfo.cusDetail.email;
+        total.innerText = (bookingInfo.tripDetail.price * 25000).toFixed(0) + ' VND';
+    } else if (bookingList) {
+        document.getElementById('customerName').innerText = bookingList[0].cusDetail.name;
+        document.getElementById('phoneNumber').innerText = bookingList[0].cusDetail.phone;
+        document.getElementById('email').innerText = bookingList[0].cusDetail.email;
+        total.innerText = (bookingList[0].tripDetail.price * 25000).toFixed(0) + ' VND';
+    }
+    else {
+        console.error('Booking information not found in cookies.');
+    }
+
+    // Gọi POST method để lưu thông tin BookingInfoDTO từ session for oneway
+    async function confirmBookingOneWay() {
+        try {
+            const paymentDate = document.getElementById('payment_date').value;
+            const bookingInfo = JSON.parse(getCookie("bookingInfo"));
+            console.log('paymentDate:', paymentDate);
+            console.log('bookingInfo:', bookingInfo);
+            const response = await fetch('/home/index/booking/oneway-payment/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cusDetail: bookingInfo.cusDetail, // Parse cookie nếu có
+                    tripDetail: bookingInfo.tripDetail, // Parse cookie nếu có
+                    paymentDate: paymentDate, // Thêm payment_date vào body
+                })
+            });
+
+            if (response.ok) {
+                const message = await response.text();
+                console.log('Success:', message);
+                alert('Đặt vé thành công ');
+
+                // Redirect tới trang xác nhận nếu cần
+                //window.location.href = '/bookings/confirmation';
+            } else {
+                console.error('Failed to confirm booking:', response.status);
+                alert('Lỗi khi lưu thông tin đặt vé.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
+    }
+    // Gọi POST method để lưu thông tin BookingInfoDTO từ session for roundtrip
+    async function confirmBookingRoundTrip() {
+        try {
+            const paymentDate = document.getElementById('payment_date').value;
+            const bookingList = JSON.parse(getCookie("bookingList"));
+            bookingList[0].paymentDate = paymentDate;
+            bookingList[1].paymentDate = paymentDate;
+            const response = await fetch('/home/index/booking/roundtrip-payment/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingList)
+            });
+
+            if (response.ok) {
+                const message = await response.text();
+                console.log('Success:', message);
+                alert('Đặt vé thành công');
+            } else {
+                console.error('Failed to confirm booking:', response.status);
+                alert('Lỗi khi lưu thông tin đặt vé.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
+    }
+    // Call the appropriate function based on the trip type
+    if (tripType === 'one-way') {
+        confirmBookingOneWay();
+    } else if (tripType === 'round-trip') {
+        confirmBookingRoundTrip();
+    } else {
+        console.error('Invalid trip type.');
+    }
+</script>
+
+</html>

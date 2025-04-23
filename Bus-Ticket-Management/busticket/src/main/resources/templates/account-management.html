@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-text-direction="ltr">
+
+<head>
+    <title>Account Management</title>
+    <div th:insert="~{dashboard-header.html}"></div>
+    <link rel="stylesheet" th:href="@{/theme-assets/css/pagination.css}" />
+    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />-->
+    <style>
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 25px;
+            padding: 5px 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .input-search {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 25px;
+        }
+
+        .input-search::placeholder {
+            color: #999;
+        }
+
+        .btn-search {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-search i {
+            font-size: 18px;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+        }
+
+        .form-group {
+            margin: 0;
+            /* Loại bỏ khoảng cách mặc định bên ngoài form-group */
+        }
+
+        .form-group label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input.form-control {
+            width: 100%;
+            /* Đảm bảo input chiếm hết chiều rộng */
+            padding: 10px;
+            /* Điều chỉnh padding cho input */
+            border: 1px solid #ccc;
+            /* Đảm bảo đường viền */
+            border-radius: 5px;
+            /* Bo góc cho input */
+            box-sizing: border-box;
+            /* Đảm bảo padding không làm phình rộng input */
+        }
+
+        .form-group select.form-control {
+            width: 100%;
+            /* Đảm bảo select chiếm hết chiều rộng */
+            padding: 10px;
+            /* Thêm không gian bên trong select */
+            border: 1px solid #ccc;
+            /* Đảm bảo có đường viền */
+            border-radius: 5px;
+            /* Bo góc cho select */
+            box-sizing: border-box;
+            /* Đảm bảo padding không làm phình rộng select */
+        }
+    </style>
+</head>
+
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click"
+    data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <!--navigation bar-->
+    <nav th:insert="~{navigation-bar.html}"></nav>
+    <!-- main menu-->
+    <div th:insert="~{main-menu.html}"></div>
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-wrapper-before"></div>
+            <div class="content-header row">
+                <div class="content-header-left col-md-4 col-12 mb-2">
+                    <h3 class="content-header-title"></h3>
+                </div>
+                <div class="content-header-right col-md-8 col-12">
+                    <div class="breadcrumbs-top float-md-right">
+                        <div class="breadcrumb-wrapper mr-1">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"></a></li>
+                                <li class="breadcrumb-item active"></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body">
+                <!-- Basic Tables start -->
+                <!-- Basic Tables end -->
+                <!-- Striped rows start -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Account</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li>
+                                            <a data-action="search" title="Search"><i class="ft-search"></i></a>
+                                        </li>
+                                        <li>
+                                            <a data-action="add-account" title="Add Account"><i class="ft-plus"></i></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <form id="searchForm" method="get" onsubmit="handleSearch(event)">
+                                    <div class="search-box" id="searchBox" style="display: none">
+                                        <input type="text" id="searchField" name="searchValue" class="input-search"
+                                            placeholder="Search account..." />
+                                        <button class="btn-search" id="searchButton" type="submit">
+                                            <i class="ft-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Email</th>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Phone</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="accountTableBody">
+                                            <tr th:each="account : ${accounts}">
+                                                <td th:text="${account.id}"></td>
+                                                <td th:text="${account.email}"></td>
+                                                <td th:text="${account.role.roleName}"></td>
+                                                <td th:text="${account.fullName}"></td>
+                                                <td th:text="${account.phone}"></td>
+                                                <td th:text="${account.status}"></td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm" title="View Details"
+                                                        onclick="viewAccountDetails('${account.id}')">
+                                                        <i class="ft-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-warning btn-sm" title="Update Account"
+                                                        onclick="updateAccount('${account.id}')">
+                                                        <i class="ft-settings"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm" title="Delete Account"
+                                                        onclick="deleteAccount('${account.id}')">
+                                                        <i class="ft-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="pagination">
+                                        <ul class="pagination-list" id="paginationControls">
+                                            <li th:if="${currentPage > 0}">
+                                                <a onclick="loadAccounts('${currentPage - 1}')"
+                                                    aria-label="Previous">&laquo;</a>
+                                            </li>
+                                            <li th:each="pageNum : ${pageNumbers}"
+                                                th:class-append="${pageNum == currentPage} ? 'active'">
+                                                <a onclick="loadAccounts('${pageNum}')" th:text="${pageNum}"></a>
+                                            </li>
+                                            <li th:if="${currentPage < totalPages - 1}">
+                                                <a onclick="loadAccounts('${currentPage + 1}')"
+                                                    aria-label="Next">&raquo;</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Striped rows end -->
+
+                <!-- Table head options start -->
+                <!-- Table head options end -->
+
+                <!-- Bordered table start -->
+                <!-- Bordered table end -->
+            </div>
+        </div>
+    </div>
+
+    <!-- View Account Modal -->
+    <div class="modal fade" id="viewAccountModal" tabindex="-1" role="dialog" aria-labelledby="viewAccountModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewAccountModalLabel">View Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Email:</strong> <span id="viewEmail"></span></p>
+                    <p><strong>Role:</strong> <span id="viewRole"></span></p>
+                    <p><strong>Name:</strong> <span id="viewName"></span></p>
+                    <p><strong>Phone:</strong> <span id="viewPhone"></span></p>
+                    <p><strong>Status:</strong> <span id="viewStatus"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- New Account Modal -->
+    <div class="modal fade" id="newAccountModal" tabindex="-1" role="dialog" aria-labelledby="newAccountModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newAccountModalLabel">New Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAccountForm">
+                        <div class="form-group">
+                            <label for="newEmail">Email</label>
+                            <input type="email" class="form-control" id="newEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newRole">Role</label>
+                            <select class="form-control" id="newRole" required>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="controller">Controller</option>
+                                <option value="customer">Customer</option>
+                                <option value="driver">Driver</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newName">Name</label>
+                            <input type="text" class="form-control" id="newName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPhone">Phone</label>
+                            <input type="text" class="form-control" id="newPhone" required pattern="\d{10,11}">
+                        </div>
+                        <div class="form-group">
+                            <label for="newStatus">Status</label>
+                            <select class="form-control" id="newStatus" required>
+                                <option value="verified">Verified</option>
+                                <option value="unverified">Unverified</option>
+                                <option value="banned">Banned</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Account Modal -->
+    <div class="modal fade" id="updateAccountModal" tabindex="-1" role="dialog"
+        aria-labelledby="updateAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateAccountModalLabel">Update Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateAccountForm">
+                        <input type="hidden" id="updateAccountId">
+                        <div class="form-group">
+                            <label for="updateEmail">Email</label>
+                            <input type="email" class="form-control" id="updateEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateRole">Role</label>
+                            <select class="form-control" id="updateRole" required>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Staff</option>
+                                <option value="controller">Controller</option>
+                                <option value="customer">Customer</option>
+                                <option value="driver">Driver</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateName">Name</label>
+                            <input type="text" class="form-control" id="updateName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updatePhone">Phone</label>
+                            <input type="text" class="form-control" id="updatePhone" required pattern="\d{10,11}">
+                        </div>
+                        <div class="form-group">
+                            <label for="updateStatus">Status</label>
+                            <select class="form-control" id="updateStatus" required>
+                                <option value="verified">Verified</option>
+                                <option value="unverified">Unverified</option>
+                                <option value="banned">Banned</option>
+                            </select>
+                        </div>
+                        <!-- <div class="form-group" id="verificationCodeGroup" style="display: none;">
+                            <label for="verificationCode">Verification Code</label>
+                            <input type="text" class="form-control" id="verificationCode">
+                            <button type="button" class="btn btn-secondary mt-2" id="sendVerificationCodeBtn">Send
+                                Verification Code</button>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="updateNewPassword">New Password</label>
+                            <input type="password" class="form-control" id="updateNewPassword"
+                                autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmUpdateNewPassword">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmUpdateNewPassword"
+                                autocomplete="new-password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div th:insert="~{dashboard-footer.html}"></div>
+    </footer>
+
+    <!-- BEGIN VENDOR JS-->
+    <script th:src="@{/theme-assets/vendors/js/vendors.min.js}" type="text/javascript"></script>
+    <!-- BEGIN VENDOR JS-->
+    <!-- BEGIN PAGE VENDOR JS-->
+    <!-- END PAGE VENDOR JS-->
+    <!-- BEGIN CHAMELEON  JS-->
+    <script th:src="@{/theme-assets/js/core/app-menu-lite.js}" type="text/javascript"></script>
+    <script th:src="@{/theme-assets/js/core/app-lite.js}" type="text/javascript"></script>
+    <!-- END CHAMELEON  JS-->
+    <!-- BEGIN PAGE LEVEL JS-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- END PAGE LEVEL JS-->
+    <script>
+        function handleSearch(event) {
+            event.preventDefault();
+            const searchValue = document.getElementById('searchField').value;
+            loadAccounts(0, searchValue);
+        }
+
+        let currentAccount;
+
+        function loadAccounts(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/account/accounts",
+                data: { page: page, size: 15, searchValue: searchTerm },
+                success: function (data) {
+                    var accounts = data.accounts;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#accountTableBody").empty();
+
+                    // Populate the table with accounts
+                    accounts.forEach(function (account) {
+                        $("#accountTableBody").append(
+                            "<tr>" +
+                            "<td>" +
+                            account.id +
+                            "</td>" +
+                            "<td>" +
+                            account.email +
+                            "</td>" +
+                            "<td>" +
+                            account.role.roleName +
+                            "</td>" +
+                            "<td>" +
+                            account.fullName +
+                            "</td>" +
+                            "<td>" +
+                            account.phone +
+                            "</td>" +
+                            "<td>" +
+                            account.status +
+                            "</td>" +
+                            "<td>" +
+                            '<button class="btn btn-primary btn-sm" title="View Details" onclick="viewAccountDetails(\'' +
+                            account.id +
+                            "')\">" +
+                            '<i class="ft-eye"></i>' +
+                            "</button>" +
+                            '<button class="btn btn-warning btn-sm" title="Update Account" onclick="updateAccount(\'' +
+                            account.id +
+                            "')\">" +
+                            '<i class="ft-settings"></i>' +
+                            "</button>" +
+                            '<button class="btn btn-danger btn-sm" title="Delete Account" onclick="deleteAccount(\'' +
+                            account.id +
+                            "')\">" +
+                            '<i class="ft-trash"></i>' +
+                            "</button>" +
+                            "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    $("#paginationControls").empty();
+
+                    if (currentPage > 0) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadAccounts(' +
+                            (currentPage - 1) +
+                            ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadAccounts(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#paginationControls").append("<li><span>...</span></li>");
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#paginationControls").append(
+                            '<li class="' +
+                            (i === currentPage ? "active" : "") +
+                            '"><a onclick="loadAccounts(' +
+                            i +
+                            ', \'' + searchTerm + '\')">' +
+                            (i + 1) +
+                            "</a></li>"
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#paginationControls").append("<li><span>...</span></li>");
+                        }
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadAccounts(' +
+                            (totalPages - 1) +
+                            ', \'' + searchTerm + '\')">' +
+                            totalPages +
+                            "</a></li>"
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#paginationControls").append(
+                            '<li><a onclick="loadAccounts(' +
+                            (currentPage + 1) +
+                            ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+            });
+        }
+
+        function viewAccountDetails(id) {
+            $.ajax({
+                url: '/api/account/account-detail/' + id,
+                method: 'GET',
+                success: function (data) {
+                    const account = data.account;
+                    $('#viewEmail').text(account.email);
+                    $('#viewRole').text(account.role.roleName);
+                    $('#viewName').text(account.fullName);
+                    $('#viewPhone').text(account.phone);
+                    $('#viewStatus').text(account.status);
+                    $('#viewAccountModal').modal('show');
+                },
+                error: function (error) {
+                    console.error('Error fetching account details:', error);
+                }
+            });
+        }
+
+        function updateAccount(id) {
+            $.ajax({
+                url: '/api/account/account-detail/' + id,
+                method: 'GET',
+                success: function (data) {
+                    const account = data.account;
+                    $('#updateAccountId').val(account.id);
+                    $('#updateEmail').val(account.email);
+                    $('#updateRole').val(account.role.roleName);
+                    $('#updateName').val(account.fullName);
+                    $('#updatePhone').val(account.phone);
+                    $('#updateStatus').val(account.status);
+                    // Lock role and status selection if updating own account or if the account has role admin
+                    if (currentAccount.id === account.id || account.role.roleName === 'admin') {
+                        $('#updateRole').prop('disabled', true);
+                        $('#updateStatus').prop('disabled', true);
+                    } else {
+                        $('#updateRole').prop('disabled', false);
+                        $('#updateStatus').prop('disabled', false);
+                    }
+                    $('#updateAccountModal').modal('show');
+                },
+                error: function (error) {
+                    console.error('Error fetching account details:', error);
+                }
+            });
+        }
+
+        // $('#updateAccountForm').on('submit', function (event) {
+        //     event.preventDefault();
+        //     var accountId = $('#updateAccountId').val();
+        //     var updatedAccount = {
+        //         id: accountId,
+        //         email: $('#updateEmail').val(),
+        //         role: { roleName: $('#updateRole').val() },
+        //         fullName: $('#updateName').val(),
+        //         phone: $('#updatePhone').val(),
+        //         status: $('#updateStatus').val(),
+        //         newPassword: $('#newPassword').val(),
+        //         confirmNewPassword: $('#confirmNewPassword').val()
+        //     };
+
+        //     if (updatedAccount.newPassword !== updatedAccount.confirmNewPassword) {
+        //         alert('New password and confirm new password do not match.');
+        //         return;
+        //     }
+
+        //     fetch('/api/account/update-account', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(updatedAccount)
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.message) {
+        //                 alert(data.message);
+        //                 if (data.message === "Account updated successfully.") {
+        //                     $('#updateAccountModal').modal('hide');
+        //                     loadAccounts(0);
+        //                 }
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating account:', error);
+        //         });
+        // });
+
+        // Handle form submission
+        $('#updateAccountForm').on('submit', function (event) {
+            event.preventDefault();
+            var accountId = $('#updateAccountId').val();
+            var updatedAccount = {
+                id: accountId,
+                email: $('#updateEmail').val(),
+                role: $('#updateRole').val(),
+                fullName: $('#updateName').val(),
+                phone: $('#updatePhone').val(),
+                status: $('#updateStatus').val(),
+                newPassword: $('#updateNewPassword').val(),
+                confirmNewPassword: $('#confirmUpdateNewPassword').val()
+            };
+            if (updatedAccount.newPassword !== updatedAccount.confirmNewPassword) {
+                alert('New password and confirm new password do not match.');
+                return;
+            }
+            fetch(`/api/account/update-account/${accountId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedAccount)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        if (data.message === "Account updated successfully.") {
+                            $('#updateAccountModal').modal('hide');
+                            loadAccounts(0);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating account:', error);
+                });
+        });
+
+        // $('#sendVerificationCodeBtn').on('click', function () {
+        //     var accountId = $('#updateAccountId').val();
+        //     fetch('/api/account/resend-verification-code', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ id: accountId })
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.message) {
+        //                 alert(data.message);
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error sending verification code:', error);
+        //         });
+        // });
+
+        function deleteAccount(id) {
+            if (confirm('Are you sure you want to delete this account?')) {
+                fetch(`/api/account/delete-account/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        // Kiểm tra trạng thái HTTP
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.message || 'Failed to delete account.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        if (data.message === "Account deleted successfully.") {
+                            // Tải lại danh sách tài khoản
+                            loadAccounts(0);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting account:', error);
+                        alert(`Error: ${error.message}`);
+                    });
+            }
+        }
+        function newAccount() {
+            $('#newAccountModal').modal('show');
+
+            $('#newAccountForm').on('submit', function (event) {
+                event.preventDefault();
+
+                const accountData = {
+                    email: $('#newEmail').val(),
+                    role: $('#newRole').val(),
+                    fullName: $('#newName').val(),
+                    phone: $('#newPhone').val(),
+                    status: $('#newStatus').val(),
+                    password: $('#newPassword').val(),
+                    confirmPassword: $('#confirmPassword').val()
+                };
+
+                // // Check password confirmation
+                // const confirmPassword = $('#confirmPassword').val();
+                // console.log(confirmPassword);
+                // console.log("accountData: ", accountData.password);
+                // if (accountData.password !== confirmPassword) {
+                //     alert("Passwords do not match!");
+                //     return;
+                // }
+
+                // Send data via API
+                $.ajax({
+                    url: '/api/account/new-account',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(accountData),
+                    success: function (data) {
+                        if (data.message) {
+                            alert(data.message);
+                            if (data.message === "Account created successfully.") {
+                                $('#newAccountModal').modal('hide');
+                                // Clear all fields in modal
+                                $('#newEmail').val('');
+                                $('#newRole').val('');
+                                $('#newName').val('');
+                                $('#newPhone').val('');
+                                $('#newStatus').val('');
+                                $('#newPassword').val('');
+                                $('#confirmPassword').val('');
+                                // Reload accounts
+                                loadAccounts(0);
+                            }
+                        }
+                    },
+                    error: function (xhr) {
+                        let errorMessage = "An error occurred";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(`Error: ${errorMessage}`);
+                    }
+                });
+            });
+        }
+
+        $('[data-action="add-account"]').on('click', function (event) {
+            event.preventDefault();
+            newAccount();
+        });
+
+
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/account/me',
+                method: 'GET',
+                success: function (data) {
+                    currentAccount = data;
+                    if (currentAccount.role.roleName == 'admin') {
+                        $('#updateRole').prop('disabled', true);
+                        $('#updateStatus').prop('disabled', true);
+                    }
+                },
+                error: function (error) {
+                    console.error('Error fetching current account details:', error);
+                }
+            });
+            loadAccounts(0);
+        });
+    </script>
+</body>
+
+</html>

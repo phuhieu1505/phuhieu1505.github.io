@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>Easy Bus</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/responsive.css}" />
+    <link rel="icon" th:href="@{/images/fevicon.png}" type="image/gif" />
+    <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/owl.theme.default.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/fontawesome.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/fontawesome.min.css}" />
+    <link rel="stylesheet"
+        th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}" />
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+        media="screen" />
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}" />
+    <link rel="stylesheet" th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" />
+</head>
+
+<body>
+    <!-- header top section start -->
+    <div class="container">
+        <div class="logo d-flex justify-content-center">
+            <a th:href="@{index}"><img th:src="@{/images/EasyBus_processed.png}" /></a>
+        </div>
+        <div class="header_section_top">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="custom_menu">
+                        <ul>
+                            <li><a th:href="@{index}">Trang Chủ</a></li>
+                            <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                            <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                            <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                            <li><a th:href="@{contact}">Liên Hệ</a></li>
+                            <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- header top section end -->
+   
+    <!-- user sign in/sign up section end -->
+    <!-- about section start -->
+    <div class="container">
+        <div class="about_section layout_padding_2">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1 class="about_taital">EASY BUS</h1>
+                </div>
+                <div class="col-sm-12">
+                    <p class="about_text_3">
+                        "Hành trình tiện lợi, trải nghiệm an toàn."
+                    </p>
+                </div>
+                <div class="fashion_section">
+                    <div class="container">
+                        <h1 class="about_text_2">
+                            Chào mừng bạn đến với EasyBus – nền tảng đặt vé xe bus trực
+                            tuyến hàng đầu tại Việt Nam, nơi mang đến sự tiện lợi và nhanh
+                            chóng cho mỗi hành trình của bạn. Với sứ mệnh nâng cao trải
+                            nghiệm du lịch bằng xe bus, chúng tôi cam kết đem lại những dịch
+                            vụ đặt vé chất lượng và an toàn nhất cho khách hàng.
+                        </h1>
+                        <div>
+                            <p class="bold_text">Tại sao chọn EasyBus?</p>
+                            <div class="about_section_text">
+                                <img th:src="@{/images/virtual-assistant.png}" class="about_img" />
+                                <ul class="about_ul">
+                                    <li>
+                                        Hỗ trợ khách hàng tận tâm: Đội ngũ chăm sóc khách hàng của
+                                        chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7, từ việc tìm kiếm
+                                        chuyến xe, giải đáp thắc mắc, đến hỗ trợ trong trường hợp
+                                        thay đổi hoặc hủy vé.
+                                    </li>
+
+                                    <li>
+                                        An toàn và tiện nghi: Không chỉ là đặt vé, chúng tôi còn
+                                        đặt mục tiêu đảm bảo bạn có một chuyến đi thoải mái và an
+                                        toàn. Mỗi nhà xe trong hệ thống của chúng tôi đều phải
+                                        tuân thủ các tiêu chuẩn an toàn cao nhất và cung cấp dịch
+                                        vụ tiện nghi.
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr />
+                            <div class="about_section_text">
+                                <ul class="about_ul">
+                                    <li>
+                                        Đặt vé dễ dàng, nhanh chóng: Bạn có thể tìm kiếm và đặt vé
+                                        chỉ trong vài phút qua website hoặc ứng dụng di động,
+                                        không cần phải xếp hàng hay gọi điện.
+                                    </li>
+
+                                    <li>
+                                        Mạng lưới nhà xe uy tín: Chúng tôi hợp tác với các nhà xe
+                                        hàng đầu trên cả nước, giúp bạn dễ dàng lựa chọn chuyến đi
+                                        phù hợp với nhu cầu cá nhân. Tất cả các đối tác của chúng
+                                        tôi đều được chọn lọc kỹ càng nhằm đảm bảo chất lượng dịch
+                                        vụ và sự an toàn cho hành khách.
+                                    </li>
+
+                                    <li>
+                                        Giá cả minh bạch, cạnh tranh: Với chúng tôi, bạn luôn biết
+                                        trước giá vé và không có chi phí ẩn. Các chương trình
+                                        khuyến mãi thường xuyên được cập nhật, giúp bạn tiết kiệm
+                                        chi phí cho những chuyến đi của mình.
+                                    </li>
+                                </ul>
+                                <img th:src="@{/images/business-agreement.png}" class="about_img" />
+                            </div>
+                            <p class="bold_text">Cam kết của chúng tôi</p>
+                            <div class="about_section_text">
+                                <img th:src="@{/images/business-goal.png}" class="about_img" />
+                                <ul class="about_ul">
+                                    <li>
+                                        Tại EasyBus, chúng tôi không ngừng nỗ lực để cải thiện
+                                        chất lượng dịch vụ và mang lại trải nghiệm tốt nhất cho
+                                        người dùng. Chúng tôi hiểu rằng mỗi chuyến đi không chỉ là
+                                        hành trình từ điểm A đến điểm B, mà còn là những khoảnh
+                                        khắc quan trọng trong cuộc sống của bạn. Chính vì thế, sự
+                                        hài lòng của bạn là niềm tự hào của chúng tôi.
+                                    </li>
+
+                                    <li>
+                                        Hãy để EasyBus là người bạn đồng hành đáng tin cậy trên
+                                        mọi chặng đường. Dù bạn đi du lịch, công tác hay về quê,
+                                        chúng tôi luôn sẵn sàng phục vụ bạn.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            <hr />
+        </div>
+    </div>
+    <!-- about section end -->
+
+    <!-- footer section start -->
+    <div class="footer_section layout_padding">
+        <div class="container">
+            <div class="footer_logo">
+                <a th:href="@{/home/index}"><img th:src="@{/images/EasyBus_processed2.png}" /></a>
+            </div>
+            <div class="input_bt">
+                <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email" />
+                <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+            </div>
+            <div class="footer_menu">
+                <ul>
+                    <li><a th:href="@{index}">Trang Chủ</a></li>
+                    <li><a th:href="@{schedule}">Lịch Trình</a></li>
+                    <li><a th:href="@{search-ticket-info}">Tra Cứu Vé</a></li>
+                    <li><a th:href="@{search-billing-info}">Hóa Đơn</a></li>
+                    <li><a th:href="@{contact}">Liên Hệ</a></li>
+                    <li><a th:href="@{about-us}">Về Chúng Tôi</a></li>
+                </ul>
+            </div>
+            <div class="location_main">
+                Help Line Number : <a href="#">+84 1800 9999 1111</a>
+            </div>
+        </div>
+    </div>
+    <!-- footer section end -->
+    <!-- copyright section start -->
+    <div class="copyright_section">
+        <div class="container">
+            <p class="copyright_text">
+                © 2024 All Rights Reserved. Design by Nhóm 10
+            </p>
+        </div>
+    </div>
+    <!-- copyright section end -->
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+    <script th:src="@{/js/plugin.js}"></script>
+    <!-- sidebar -->
+    <script th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:src="@{/js/custom.js}"></script>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+</body>
+
+</html>

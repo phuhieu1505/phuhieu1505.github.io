@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <!-- basic -->
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <!-- mobile metas -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+   <!-- site metas -->
+   <title>Easy Bus</title>
+   <meta name="keywords" content="">
+   <meta name="description" content="">
+   <meta name="author" content="">
+   <!--Bootstrap icon -->
+   <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css}">
+   <!-- bootstrap css -->
+   <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+   <!-- style css -->
+   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+   <!-- Responsive-->
+   <link rel="stylesheet" th:href="@{/css/responsive.css}">
+   <!-- fevicon -->
+   <link rel="icon"  type="image/gif" />
+   <!-- Scrollbar Custom CSS -->
+   <link rel="stylesheet" th:href="@{/css/jquery.mCustomScrollbar.min.css}">
+   <!-- Tweaks for older IEs-->
+   <link rel="stylesheet"
+      th:href="@{https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css}"
+      integrity="sha384-NvKbDTEnL+A8F/AA5Tc5kmMLSJHUO868P+lDtTpJIeQdGYaUIuLr4lVGOEA1OcMy" crossorigin="anonymous">
+   <!-- fonts -->
+   <link th:href="@{https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap}" rel="stylesheet">
+   <!-- font awesome -->
+   <!-- <link rel="stylesheet" type="text/css" th:href="@{https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css}"> -->
+   <!--  -->
+   <link rel="stylesheet" th:href="@{/css/fontawesome.css/fontawesome.min.css}">
+   <!-- owl stylesheets -->
+   <link th:href="@{https://fonts.googleapis.com/css?family=Great+Vibes|Poppins:400,700&display=swap&subset=latin-ext}"
+      rel="stylesheet">
+   <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+   <link rel="stylesoeet" th:href="@{/css/owl.theme.default.min.css}">
+   <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css}"
+      media="screen">
+</head>
+
+<body>
+   <!-- banner bg main start -->
+   
+      <!-- header top section start -->
+        <div class="container">
+            <div class="header_section_top">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="custom_menu">
+                            <ul>
+                                <li><a th:href="@{../index}">Trang Chủ</a></li>
+                                <li><a th:href="@{../schedule}">Lịch Trình</a></li>
+                                <li><a th:href="@{../search-ticket-info}">Tra Cứu Vé</a></li>
+                                <li><a th:href="@{../search-billing-info}">Hóa Đơn</a></li>
+                                <li><a th:href="@{../contact}">Liên Hệ</a></li>
+                                <li><a th:href="@{../about-us}">Về Chúng Tôi</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <!-- header top section end -->
+        <!-- user sign in/sign up section start -->
+        <div class="col-sm-12 ">
+            <div class="login_menu">
+                <ul>
+                <li><a href="#">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </li>
+                </ul>
+            </div>
+        </div>
+        <!-- user sign in/sign up section end -->
+       
+   
+   <!-- banner bg main end -->
+
+   <!-- header section start -->
+   <div class="header_section">
+      <div class="container">
+         <form class="search-form" id="searchForm" th:action="@{/home/index/search}"  method="get">
+            <div class="containt_main d-flex flex-wrap">
+               <div class="row1 justify-content-between d-flex flex-nowrap">
+                  <div class="col-10">
+                     <div class="form-header">
+                        <label>
+                           <input type="radio" name="tripType" value="one-way" th:checked="${tripType == 'one-way'}" checked onclick="toggleReturnDate()"> Một chiều
+                        </label>
+                        <label>
+                           <input type="radio" name="tripType" value="round-trip" th:checked="${tripType == 'round-trip'}" onclick="toggleReturnDate()"> Khứ hồi
+                        </label>
+                     </div>
+                  </div>
+                  <div class="col-2 ">
+                     <a href="#">Hướng dẫn mua vé</a>
+                  </div>
+               </div>
+
+               <div class="row1 d-flex flex-wrap">
+                  <div class="form-group">
+                     <label for="departure">Điểm đi</label>
+                     <input type="text" id="departure" list="departureList" name="departure" th:value="${departure}">
+                     <datalist id="departureList" >
+                        <option th:each="province : ${provinces}" th:value="${province}"></option>
+                        <option th:each="city : ${cities}" th:value="${city}"></option>
+                     </datalist>
+                  </div>
+                  <div class="swap-btn" onclick="swapValues()">⇆</div>
+                  <div class="form-group">
+                     <label for="destination">Điểm đến</label>
+                     <input type="text" id="destination" list="destinationList" name="destination" th:value="${destination}">
+                     <datalist id="destinationList">
+                        <option th:each="province : ${provinces}" th:value="${province}"></option>
+                        <option th:each="city : ${cities}" th:value="${city}"></option>
+                     </datalist>
+                  </div>
+                  <div class="form-group">
+                     <label for="date">Ngày đi</label>
+                     <input type="date" id="date" name="date" th:value="${date}">
+                  </div>
+                  <div class="form-group hide" id="return-date">
+                     <label for="returnDate">Ngày về</label>
+                     <input type="date" id="returnDate" name="returnDate" th:value="${returnDate}">
+                  </div>
+                  <div class="form-group">
+                     <label for="ticketNum">Số vé</label>
+                     <select id="ticketNum" name="ticketNum" th:value="${ticketNum}">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="btn-container d-flex justify-content-center">
+                  <button type="submit" class="search-btn" onclick="validateForm(event)">Tìm chuyến xe</button>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>   
+   </div>
+   <!-- header section end -->
+   <!-- search booking section start -->
+   <div class="fashion_section">
+      <div class="container">
+         <div th:if="${tripType == 'round-trip' && !#lists.isEmpty(trips) || tripType == 'round-trip' && !#lists.isEmpty(returnTrips)}" class="d-flex  trip-card-2 flex-wrap ">
+            <h4 class="full visa-logo">Chuyến đi của bạn:</h4>
+            <!-- Elements to display selected trips -->
+            <div id="selectedTrips" class="d-flex flex-row"style="margin-top: 20px;width: 100%;justify-content: space-around;">
+               
+               <div id="selectedDepartureTrip" class="visa-logo">
+                  <p>Chưa chọn chuyến đi</p>
+               </div>
+               <div id="selectedReturnTrip" class="visa-logo">
+                  <p>Chưa chọn chuyến về</p>
+               </div>
+            </div>
+            <form class="booking-detail-form d-flex justify-content-center" th:if="${tripType == 'round-trip'}" id="bookingDetailForm" th:action="@{'/home/index/booking-roundtrip'}" method="get">
+               <input type="hidden" id="departureTripId" name="departureTripId" />
+               <input type="hidden" id="returnTripId" name="returnTripId" />
+               <button class="choose-trip-button" type="submit" id="confirmButton">Xác Nhận</button>
+         </form>
+        </div>
+            <div th:if="${tripType == 'round-trip' && !#lists.isEmpty(trips) || tripType == 'round-trip' && !#lists.isEmpty(returnTrips)}" class="box-card d-flex flex-row justify-content-between full">
+               <div class="trip-go d-flex justify-content-center full" id="tripGo" onclick="showTrips('go')">
+                     <p class="about_text_4">CHUYẾN ĐI - <span th:text="${date}" ></span> </p> 
+               </div>
+               <div class="trip-return d-flex justify-content-center full" id="tripReturn" onclick="showTrips('return')">
+                   <p class="about_text_4">CHUYẾN VỀ - <span th:text="${returnDate}"></span></p> 
+               </div>
+               
+            </div>
+            <div th:if="${!#lists.isEmpty(trips) || !#lists.isEmpty(returnTrips)}" >
+               <div class="route-info h3">
+                 <span th:text="${departure} + ' - ' + ${destination}"></span>
+               </div>
+               
+             </div>
+         <div class="tripGo-container " id="listOfTripGo">
+            <div th:if="${#lists.isEmpty(trips)}" class="d-flex flex-column justify-content-center space" style="margin-left:550px;">
+               <i class="bi bi-list-stars d-flex flex-grow justify-content-center  h1"></i>
+               <p class="d-flex flex-grow justify-content-center nospace about_text_4 ">Không tìm thấy chuyến xe nào.</p> 
+            </div>
+            <div class="trip-card d-flex flex-wrap full" th:each="trip: ${trips}" >   
+               <div class="trip-time ">
+                  <div class="d-flex justify-content-between">
+                     <div class="d-flex flex-nowrap">
+                        <span class="time" th:text="${#temporals.format(trip.departureTime,'HH:mm')}"></span>
+                        <i class="bi bi-record-circle icon"></i>
+                     </div> 
+                     <div class="time-line"></div>
+                     <div class="d-flex flex-nowrap">    
+                        <i class="bi bi-geo-alt-fill icon"></i>
+                        <span class="time" th:text="${#temporals.format(trip.arrivalTime,'HH:mm')}"></span>
+                     </div>  
+                  </div>
+                  
+              </div>
+               <div class="trip-details">
+                  <span th:text="${trip.getBus().getSeatType()}"></span>
+               </div>
+               <div class="price">
+                     <span th:text="${trip.price}"></span>
+               </div>
+               
+               <div class="route d-flex ">
+                  <div th:with="routeParts=${#strings.arraySplit(#strings.replace(trip.route.name, ' - ','|'),'|')}" class="d-flex flex-nowrap flex-grow-1 justify-content-between align-items-center locationContent">
+                    <div class="departureLocation h6">
+                      <span th:text="${routeParts[0]}"></span>
+                    </div>
+                    <div class="destinationLocation h6">
+                      <span th:text="${routeParts.length > 1 ? routeParts[1] : ''}"></span>
+                    </div>
+                  </div>
+                  <form class="booking-detail-form" th:if="${tripType == 'one-way'}" th:action="@{'/home/index/booking/' + ${trip.tripId}}" method="get">
+                     <button class="choose-trip-button">Chọn chuyến</button>
+                  </form>
+                  <button class="choose-trip-button" th:if="${tripType == 'round-trip'}" th:onclick="selectTrip('departure', [[${trip.tripId}]] ,'[[${#temporals.format(trip.departureTime,'yyyy-MM-dd HH:mm')}]]', '[[${#temporals.format(trip.arrivalTime,'yyyy-MM-dd HH:mm')}]]', '[[${trip.route.name}]]')">
+                     Chọn chuyến
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div class="tripReturn-container" id="listOfTripReturn">
+            <div th:if="${#lists.isEmpty(returnTrips)}" class="d-flex flex-column justify-content-center space" style="margin-left:550px;">
+               <i class="bi bi-list-stars d-flex flex-grow justify-content-center  h1"></i>
+               <p class="d-flex flex-grow justify-content-center nospace about_text_4 ">Không tìm thấy chuyến xe nào.</p> 
+            </div>
+            <div class="trip-card d-flex flex-wrap full" th:each="trip: ${returnTrips}" >   
+               <div class="trip-time ">
+                  <div class="d-flex justify-content-between">
+                     <div class="d-flex flex-nowrap">
+                        <span class="time" th:text="${#temporals.format(trip.departureTime,'HH:mm')}"></span>
+                        <i class="bi bi-record-circle icon"></i>
+                     </div> 
+                     <div class="time-line"></div>
+                     <div class="d-flex flex-nowrap">    
+                        <i class="bi bi-geo-alt-fill icon"></i>
+                        <span class="time" th:text="${#temporals.format(trip.arrivalTime,'HH:mm')}"></span>
+                     </div>  
+                  </div>
+                  
+              </div>
+               <div class="trip-details">
+                  <span th:text="${trip.getBus().getSeatType()}"></span>
+               </div>
+               <div class="price">
+                     <span th:text="${trip.price}"></span>
+               </div>
+               
+               <div class="route d-flex ">
+                  <div th:with="routeParts=${#strings.arraySplit(#strings.replace(trip.route.name, ' - ','|'),'|')}" class="d-flex flex-nowrap flex-grow-1 justify-content-between align-items-center locationContent">
+                    <div class="departureLocation h6">
+                      <span th:text="${routeParts[0]}"></span>
+                    </div>
+                    <div class="destinationLocation h6">
+                      <span th:text="${routeParts.length > 1 ? routeParts[1] : ''}"></span>
+                    </div>
+                  </div>
+                  
+                  <button class="choose-trip-button" th:if="${tripType == 'round-trip'}" th:onclick="selectTrip('return',  [[${trip.tripId}]] , '[[${#temporals.format(trip.departureTime,'yyyy-MM-dd HH:mm')}]]', '[[${#temporals.format(trip.arrivalTime,'yyyy-MM-dd HH:mm')}]]', '[[${trip.route.name}]]')">
+                     Chọn chuyến
+                 </button>
+               </div>
+            </div>
+         </div>
+         
+      </div>
+   </div>
+   <!-- footer section start -->
+   <div class="footer_section layout_padding">
+      <div class="container">
+         <div class="footer_logo"><a th:href="@{index}"><img src="/images/EasyBus_processed2.png"></a></div>
+         <div class="input_bt">
+            <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+            <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+         </div>
+         <div class="footer_menu">
+            <ul>
+               <li><a th:href="@{../index}">Trang Chủ</a></li>
+               <li><a th:href="@{../schedule}">Lịch Trình</a></li>
+               <li><a th:href="@{../search-ticket-info}">Tra Cứu Vé</a></li>
+               <li><a th:href="@{../search-billing-info}">Hóa Đơn</a></li>
+               <li><a th:href="@{../contact}">Liên Hệ</a></li>
+               <li><a th:href="@{../about-us}">Về Chúng Tôi</a></li>
+            </ul>
+         </div>
+         <div class="location_main">Help Line Number : <a href="#">+84 1800 9999 1111</a></div>
+      </div>
+   </div>
+   <!-- footer section end -->
+   <!-- copyright section start -->
+   <div class="copyright_section">
+      <div class="container">
+         <p class="copyright_text">© 2024 All Rights Reserved. Design by Nhóm 10</a></p>
+      </div>
+   </div>
+   <!-- copyright section end -->
+   <!-- Javascript files-->
+   <script th:src="@{/js/jquery.min.js}"></script>
+   <script th:src="@{/js/popper.min.js}"></script>
+   <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+   <script th:src="@{/js/jquery-3.0.0.min.js}"></script>
+   <script th:src="@{/js/plugin.js}"></script>
+   <!-- sidebar -->
+   <script th:src="@{/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+   <script th:src="@{/js/custom.js}"></script>
+   <script>
+      function openNav() {
+         document.getElementById("mySidenav").style.width = "250px";
+      }
+
+      function closeNav() {
+         document.getElementById("mySidenav").style.width = "0";
+      }
+      // Function to swap the values of the departure and destination input fields
+      function swapValues() {
+         event.preventDefault();
+         const departureInput = document.getElementById('departure');
+         const destinationInput = document.getElementById('destination');
+         const temp = departureInput.value;
+         departureInput.value = destinationInput.value;
+         destinationInput.value = temp;
+      }
+      function setMinDate() {
+         const today = new Date().toISOString().split('T')[0];
+         document.getElementById('date').setAttribute('min', today);
+         document.getElementById('returnDate').setAttribute('min', today);
+      }
+      window.onload = function() {
+         setMinDate();
+         toggleReturnDate();
+      };
+      function toggleReturnDate() {
+         const tripType = document.querySelector('input[name="tripType"]:checked').value;
+         const returnDateElement = document.getElementById('return-date');
+            if (tripType === 'round-trip') {
+               returnDateElement.classList.remove('hide');
+         } else {
+               returnDateElement.classList.add('hide');
+         }
+         }
+      function showTrips(type) {
+      const listOfTripGo = document.getElementById('listOfTripGo');
+      const listOfTripReturn = document.getElementById('listOfTripReturn');
+      if (listOfTripGo && listOfTripReturn) {
+         if (type === 'go') {
+            listOfTripGo.style.display = 'flex';
+            listOfTripReturn.style.display = 'none';
+         } else if (type === 'return') {
+            listOfTripGo.style.display = 'none';
+            listOfTripReturn.style.display = 'flex';
+         }
+         }
+       }
+       function validateForm(event) {
+         const departureDate = new Date(document.getElementById('date').value);
+         const returnDate = new Date(document.getElementById('returnDate').value)
+         const tripType = document.querySelector('input[name="tripType"]:checked').value;
+         const returnDateElement = document.getElementById('returnDate');
+
+         if (tripType === 'round-trip' && (!returnDateElement || !returnDateElement.value)) {
+            alert('Vui lòng chọn ngày về cho chuyến khứ hồi.');
+            event.preventDefault(); // Prevent form submission
+         }
+         else if (tripType === 'round-trip' && returnDate < departureDate) {
+             alert('Ngày về không thể trước ngày đi.');
+             event.preventDefault(); // Prevent form submission
+         }
+         
+      }
+       let selectedDepartureTripId = null;
+       let selectedReturnTripId = null;
+   
+       function selectTrip(type, tripId, departureTime, arrivalTime, routeName) {
+           if (type === 'departure') {
+               console.log(tripId);
+               selectedDepartureTripId = tripId;
+               document.getElementById('departureTripId').value = tripId;
+               document.getElementById('selectedDepartureTrip').innerHTML = `
+               <p style="font-weight:bold ; ">Chuyến đi đã chọn:</p>
+               <p style="font-weight:bold ; ">Thời gian khởi hành: ${departureTime}</p>
+               <p style="font-weight:bold ; ">Thời gian đến: ${arrivalTime}</p>
+               <p style="font-weight:bold ; ">Tuyến: ${routeName}</p>
+          
+           `;
+           } else if (type === 'return') {
+            console.log(tripId);
+               selectedReturnTripId = tripId;
+               document.getElementById('returnTripId').value = tripId;
+               document.getElementById('selectedReturnTrip').innerHTML = `
+                     <p style="font-weight:bold ; ">Chuyến về đã chọn:</p>
+                     <p style="font-weight:bold ; ">Thời gian khởi hành: ${departureTime}</p>
+                     <p style="font-weight:bold ; ">Thời gian đến: ${arrivalTime}</p>
+                     <p style="font-weight:bold ; ">Tuyến: ${routeName}</p>
+                     
+               `;
+           }
+           updateFormAction();
+       }
+   
+       function updateFormAction() {
+           if (selectedDepartureTripId && selectedReturnTripId) {
+               const form = document.getElementById('bookingDetailForm');
+               form.action = `/home/index/booking-roundtrip?departureTripId=${selectedDepartureTripId}&returnTripId=${selectedReturnTripId}`;
+           }
+       }
+      
+         document.addEventListener('DOMContentLoaded', function () {
+            showTrips('go');
+            const daysInVietnamese = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+        
+            // Function to format date
+            function formatDate(date) {
+                const dayOfWeek = daysInVietnamese[date.getDay()];
+                const day = date.getDate();
+                const month = date.getMonth() + 1; // Months are zero-based
+                return `${dayOfWeek},${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}`;
+            }
+            
+        
+            // Handle the trip go date
+            const dateElement = document.querySelector('#date');
+            const tripGoElement = document.querySelector('.trip-go span');
+        
+            if (dateElement && tripGoElement) {
+                const tripGoDate = new Date(dateElement.value); // Get date from the input field
+                if (!isNaN(tripGoDate)) {
+                    tripGoElement.textContent = formatDate(tripGoDate); // Set formatted date
+                }
+            }
+        
+            // Handle the return date (if visible)
+            const returnDateElement = document.querySelector('#returnDate');
+            const tripReturnElement = document.querySelector('.trip-return span');
+            if (returnDateElement && tripReturnElement) {
+                const tripReturnDate = new Date(returnDateElement.value);
+                if (!isNaN(tripReturnDate)) {
+                  tripReturnElement.textContent = formatDate(tripReturnDate);
+                }
+            }
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.addEventListener('click', function(event) {
+               if (!selectedDepartureTripId || !selectedReturnTripId) {
+                     alert('Bạn phải chọn cả chuyến đi và chuyến về trước khi xác nhận.');
+                     event.preventDefault(); // Prevent form submission
+               }
+            });
+        });
+   </script>
+</body>
+
+</html>

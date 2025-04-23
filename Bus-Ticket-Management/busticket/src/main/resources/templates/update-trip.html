@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Trip</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+    <style>
+        .schedule-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .schedule-table th {
+            background-color: #f8f9fa;
+        }
+
+        .schedule-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #controllerSchedule {
+            margin-top: 20px;
+        }
+
+        #controllerCalendar {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-box .form-group {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .search-box .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .search-box .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box .btn-search {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .search-box .btn-search i {
+            margin-right: 5px;
+        }
+
+        .search-box .btn-search:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination-list {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            justify-content: center;
+            /* Center the pagination buttons */
+        }
+
+        .pagination-list li {
+            margin: 0 5px;
+        }
+
+        .pagination-list li a {
+            display: block;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            color: #007bff;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination-list li a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination-list li.active a {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination-list li span {
+            display: block;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/easy-bus/trip-management">Trip Management</a></li>
+                <li class="breadcrumb-item active">Update Trip</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="container mt-5">
+
+        <h1>Edit Trip</h1>
+        <form id="tripForm" th:object="${trip}">
+            <div class="form-group">
+                <label for="departureTime">Departure Time</label>
+                <div class="form-group">
+                    <input type="datetime-local" class="form-control" id="departureTime" name="departureTime"
+                        required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="arrivalTime">Arrival Time</label>
+                <input type="datetime-local" class="form-control" id="arrivalTime" name="arrivalTime" required />
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" step="0.1" class="form-control" id="price" name="price" th:field="*{price}" min="0"
+                    required />
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status" th:field="*{status}" required>
+                    <option value="waiting">Waiting</option>
+                    <option value="arriving">Arriving</option>
+                    <option value="finished">Finished</option>
+                </select>
+            </div>
+            <h2 class="mt-4">Select Bus</h2>
+            <div class="search-box">
+                <input type="text" class="form-control" id="busSearchBox" placeholder="Search bus..." />
+<!--                <button class="btn-search" id="searchBusButton" type="button" onclick="loadBuses(0)">-->
+<!--                    <i class="ft-search"></i> Search-->
+<!--                </button>-->
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Bus Plate</th>
+                            <th scope="col">Seat Type</th>
+                            <th scope="col">Number of Seats</th>
+                        </tr>
+                    </thead>
+                    <tbody id="busTableBody">
+                        <!-- Buses will be dynamically loaded here -->
+                    </tbody>
+                </table>
+                <div class="pagination d-flex justify-content-center">
+                    <ul class="pagination-list" id="busPaginationControls">
+                        <!-- Pagination controls will be dynamically generated here -->
+                    </ul>
+                </div>
+                <!-- <div id="selectedBusDetails" class="mt-3"></div> -->
+            </div>
+            <div id="busSchedule" class="mt-4">
+                <h3>Upcoming Trips for Selected Bus</h3>
+                <div id="busCalendar"></div>
+            </div>
+            <h2 class="mt-4">Select Driver</h2>
+            <div class="search-box">
+                <input type="text" class="form-control" id="driverSearchBox" placeholder="Search driver..." />
+<!--                <button class="btn-search" id="searchDriverButton" type="button" onclick="loadDrivers(0)">-->
+<!--                    <i class="ft-search"></i> Search-->
+<!--                </button>-->
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Driver ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="driverTableBody">
+                        <!-- Drivers will be dynamically loaded here -->
+                    </tbody>
+                </table>
+                <div class="pagination  d-flex justify-content-center">
+                    <ul class="pagination-list" id="driverPaginationControls">
+                        <!-- Pagination controls will be dynamically generated here -->
+                    </ul>
+                </div>
+                <!-- <div id="selectedDriverDetails" class="mt-3"></div> -->
+            </div>
+
+
+            <div id="driverSchedule" class="mt-4">
+                <h3>Upcoming Trips for Selected Driver</h3>
+                <div id="driverCalendar"></div>
+            </div>
+
+            <h2 class="mt-4">Select Controller</h2>
+            <div class="search-box">
+                <input type="text" class="form-control" id="controllerSearchBox" placeholder="Search controller..." />
+<!--                <button class="btn-search" id="searchControllerButton" type="button" onclick="loadControllers(0)">-->
+<!--                    <i class="ft-search"></i> Search-->
+<!--                </button>-->
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Controller ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="controllerTableBody">
+                        <!-- Controllers will be dynamically loaded here -->
+                    </tbody>
+                </table>
+                <div class="pagination d-flex justify-content-center">
+                    <ul class="pagination-list" id="controllerPaginationControls">
+                        <!-- Pagination controls will be dynamically generated here -->
+                    </ul>
+                </div>
+
+                <!-- <div id="selectedControllerDetails" class="mt-3"></div> -->
+            </div>
+            <div id="controllerSchedule" class="mt-4">
+                <h3>Upcoming Trips for Selected Controller</h3>
+                <div id="controllerCalendar"></div>
+            </div>
+
+            <h2 class="mt-4">Select Staff</h2>
+            <div class="search-box">
+                <input type="text" class="form-control" id="staffSearchBox" placeholder="Search staff..." />
+<!--                <button class="btn-search" id="searchStaffButton" type="button" onclick="loadStaff(0)">-->
+<!--                    <i class="ft-search"></i> Search-->
+<!--                </button>-->
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Staff ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <!-- Staff will be dynamically loaded here -->
+                    </tbody>
+                </table>
+
+                <div class="pagination  d-flex justify-content-center">
+                    <ul class="pagination-list" id="staffPaginationControls">
+                        <!-- Pagination controls will be dynamically generated here -->
+                    </ul>
+                </div>
+
+                <!-- <div id="selectedStaffDetails" class="mt-3"></div> -->
+            </div>
+            <h2 class="mt-4">Select Route</h2>
+            <div class="search-box">
+                <input type="text" class="form-control" id="routeSearchBox" placeholder="Search route..." />
+<!--                <button class="btn-search" id="searchRouteButton" type="button" onclick="loadRoutes(0)">-->
+<!--                    <i class="ft-search"></i> Search-->
+<!--                </button>-->
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Select</th>
+                            <th scope="col">Route Code</th>
+                            <th scope="col">Route Name</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routeTableBody">
+                        <!-- Routes will be dynamically loaded here -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <ul class="pagination-list" id="routePaginationControls">
+                        <!-- Pagination controls will be dynamically generated here -->
+                    </ul>
+                </div>
+                <!-- <div id="selectedRouteDetails" class="mt-3"></div> -->
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        let selectedBus = [];
+        let selectedDriver = [];
+        let selectedController = [];
+        let selectedStaff = [];
+        let selectedRoute = [];
+        let initialFormData = {};
+
+        function loadBuses(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/bus/buses",
+                method: "GET",
+                data: { page: page, size: 10, searchValue: searchTerm },
+                success: function (data) {
+                    var buses = data.buses;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#busTableBody").empty();
+
+                    // Populate the table with buses
+                    buses.forEach(function (bus) {
+                        $("#busTableBody").append(
+                            "<tr>" +
+                            '<td><input type="radio" name="bus" class="bus-radio" data-plate="' + bus.plate + '"></td>' +
+                            "<td>" + bus.plate + "</td>" +
+                            "<td>" + bus.seatType + "</td>" +
+                            "<td>" + bus.numberOfSeat + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $("#busPaginationControls").empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $("#busPaginationControls").append(
+                            '<li><a onclick="loadBuses(' + (currentPage - 1) + ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#busPaginationControls").append(
+                            '<li><a onclick="loadBuses(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#busPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#busPaginationControls").append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadBuses(' + i + ', \'' + searchTerm + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#busPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $("#busPaginationControls").append(
+                            '<li><a onclick="loadBuses(' + (totalPages - 1) + ', \'' + searchTerm + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#busPaginationControls").append(
+                            '<li><a onclick="loadBuses(' + (currentPage + 1) + ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading buses:', error);
+                }
+            });
+        }
+
+        function loadDrivers(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/driver/drivers",
+                data: { page: page, size: 10, searchValue: searchTerm },
+                method: "GET",
+                success: function (data) {
+                    var drivers = data.drivers;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#driverTableBody").empty();
+
+                    // Populate the table with drivers
+                    drivers.forEach(function (driver) {
+                        $("#driverTableBody").append(
+                            "<tr>" +
+                            '<td><input type="radio" name="driver" class="driver-radio" data-id="' + driver.driverId + '"></td>' +
+                            "<td>" + driver.driverId + "</td>" +
+                            "<td>" + driver.account.fullName + "</td>" +
+                            "<td>" + driver.account.email + "</td>" +
+                            "<td>" + driver.account.phone + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $("#driverPaginationControls").empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $("#driverPaginationControls").append(
+                            '<li><a onclick="loadDrivers(' + (currentPage - 1) + ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#driverPaginationControls").append(
+                            '<li><a onclick="loadDrivers(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#driverPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#driverPaginationControls").append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadDrivers(' + i + ', \'' + searchTerm + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#driverPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $("#driverPaginationControls").append(
+                            '<li><a onclick="loadDrivers(' + (totalPages - 1) + ', \'' + searchTerm + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#driverPaginationControls").append(
+                            '<li><a onclick="loadDrivers(' + (currentPage + 1) + ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading drivers:', error);
+                }
+            });
+        }
+
+        function loadControllers(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/controller/controllers",
+                data: { page: page, size: 10, searchValue: searchTerm },
+                method: "GET",
+                success: function (data) {
+                    var controllers = data.controllers;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#controllerTableBody").empty();
+
+                    // Populate the table with controllers
+                    controllers.forEach(function (controller) {
+                        $("#controllerTableBody").append(
+                            "<tr>" +
+                            '<td><input type="radio" name="controller" class="controller-radio" data-id="' + controller.id + '"></td>' +
+                            "<td>" + controller.id + "</td>" +
+                            "<td>" + controller.account.fullName + "</td>" +
+                            "<td>" + controller.account.email + "</td>" +
+                            "<td>" + controller.account.phone + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $("#controllerPaginationControls").empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $("#controllerPaginationControls").append(
+                            '<li><a onclick="loadControllers(' + (currentPage - 1) + ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#controllerPaginationControls").append(
+                            '<li><a onclick="loadControllers(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#controllerPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#controllerPaginationControls").append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadControllers(' + i + ', \'' + searchTerm + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#controllerPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $("#controllerPaginationControls").append(
+                            '<li><a onclick="loadControllers(' + (totalPages - 1) + ', \'' + searchTerm + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#controllerPaginationControls").append(
+                            '<li><a onclick="loadControllers(' + (currentPage + 1) + ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading controllers:', error);
+                }
+            });
+        }
+
+        function loadStaff(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/staff/staffs",
+                data: { page: page, size: 10, searchValue: searchTerm },
+                method: "GET",
+                success: function (data) {
+                    var staffs = data.staffs;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#staffTableBody").empty();
+
+                    // Populate the table with staff
+                    staffs.forEach(function (staff) {
+                        $("#staffTableBody").append(
+                            "<tr>" +
+                            '<td><input type="radio" name="staff" class="staff-radio" data-id="' + staff.staff_id + '"></td>' +
+                            "<td>" + staff.staff_id + "</td>" +
+                            "<td>" + staff.account.fullName + "</td>" +
+                            "<td>" + staff.account.email + "</td>" +
+                            "<td>" + staff.account.phone + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $("#staffPaginationControls").empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $("#staffPaginationControls").append(
+                            '<li><a onclick="loadStaff(' + (currentPage - 1) + ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#staffPaginationControls").append(
+                            '<li><a onclick="loadStaff(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#staffPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#staffPaginationControls").append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadStaff(' + i + ', \'' + searchTerm + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#staffPaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $("#staffPaginationControls").append(
+                            '<li><a onclick="loadStaff(' + (totalPages - 1) + ', \'' + searchTerm + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#staffPaginationControls").append(
+                            '<li><a onclick="loadStaff(' + (currentPage + 1) + ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading staff:', error);
+                }
+            });
+        }
+
+        function loadRoutes(page, searchTerm = "") {
+            $.ajax({
+                url: "/api/route/routes",
+                data: { page: page, size: 10, searchValue: searchTerm },
+                method: "GET",
+                success: function (data) {
+                    var routes = data.routes;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $("#routeTableBody").empty();
+
+                    // Populate the table with routes
+                    routes.forEach(function (route) {
+                        $("#routeTableBody").append(
+                            "<tr>" +
+                            '<td><input type="radio" name="route" class="route-radio" data-code="' + route.code + '"></td>' +
+                            "<td>" + route.code + "</td>" +
+                            "<td>" + route.name + "</td>" +
+                            "<td>" + route.time + "</td>" +
+                            "<td>" + route.distance + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $("#routePaginationControls").empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $("#routePaginationControls").append(
+                            '<li><a onclick="loadRoutes(' + (currentPage - 1) + ', \'' + searchTerm + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $("#routePaginationControls").append(
+                            '<li><a onclick="loadRoutes(0, \'' + searchTerm + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $("#routePaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $("#routePaginationControls").append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadRoutes(' + i + ', \'' + searchTerm + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $("#routePaginationControls").append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $("#routePaginationControls").append(
+                            '<li><a onclick="loadRoutes(' + (totalPages - 1) + ', \'' + searchTerm + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $("#routePaginationControls").append(
+                            '<li><a onclick="loadRoutes(' + (currentPage + 1) + ', \'' + searchTerm + '\')">&raquo;</a></li>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading routes:', error);
+                }
+            });
+        }
+
+        function getSelectedItems(tripId) {
+            fetch(`/api/trip/selected-trip/${tripId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Error fetching trip details: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    document.getElementById("departureTime").value = data.trip.departureTime;
+                    document.getElementById("arrivalTime").value = data.trip.arrivalTime;
+                    document.getElementById("price").value = data.trip.price;
+                    document.getElementById("status").value = data.trip.status;
+
+                    // Pre-select and trigger change for bus
+                    const busRadio = document.querySelector(`input[name='bus'][data-plate="${data.trip.busPlate}"]`);
+                    if (busRadio) {
+                        busRadio.checked = true;
+                        $(busRadio).trigger("change"); // Trigger change
+                    }
+
+                    // Pre-select and trigger change for driver
+                    const driverRadio = document.querySelector(`input[name='driver'][data-id="${data.trip.driverId}"]`);
+                    if (driverRadio) {
+                        driverRadio.checked = true;
+                        $(driverRadio).trigger("change"); // Trigger change
+                    }
+
+                    // Pre-select and trigger change for controller
+                    const controllerRadio = document.querySelector(`input[name='controller'][data-id="${data.trip.controllerId}"]`);
+                    if (controllerRadio) {
+                        controllerRadio.checked = true;
+                        $(controllerRadio).trigger("change"); // Trigger change
+                    }
+
+                    const staffRadio = document.querySelector(`input[name='staff'][data-id="${data.trip.staff_id}"]`);
+                    if (staffRadio) {
+                        staffRadio.checked = true;
+                        $(staffRadio).trigger("change");
+                    }
+
+                    // Pre-select and trigger change for route
+                    const routeRadio = document.querySelector(`input[name='route'][data-code="${data.trip.routeCode}"]`);
+                    if (routeRadio) {
+                        routeRadio.checked = true;
+                        $(routeRadio).trigger("change"); // Trigger change
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching default selected entities:", error);
+                });
+        }
+
+        function getFormData(form) {
+            const formData = new FormData(form);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            jsonData["busPlate"] = $("input[name='bus']:checked").data("plate");
+            jsonData["driverId"] = $("input[name='driver']:checked").data("id");
+            jsonData["controllerId"] = $("input[name='controller']:checked").data("id");
+            jsonData["staff_id"] = $("input[name='staff']:checked").data("id");
+            jsonData["routeCode"] = $("input[name='route']:checked").data("code");
+            return jsonData;
+        }
+
+        function loadUpcomingTrips(entityType, entityId) {
+            console.log("Loading upcoming trips for", entityType, entityId); // Debug log
+            $.ajax({
+                url: "/api/trip/upcoming-trips",
+                data: { entityType: entityType, entityId: entityId },
+                method: "GET",
+                success: function (data) {
+                    console.log("Received data:", data); // Debug log
+                    if (!data || !data.trips || data.trips.length === 0) {
+                        console.log("No upcoming trips found."); // Debug log
+                        var message = "No upcoming trips found.";
+                        if (entityType === 'controller') {
+                            document.getElementById('controllerCalendar').innerHTML = message;
+                        } else if (entityType === 'driver') {
+                            document.getElementById('driverCalendar').innerHTML = message;
+                        } else if (entityType === 'bus') {
+                            document.getElementById('busCalendar').innerHTML = message;
+                        }
+                        return;
+                    }
+                    var trips = data.trips;
+                    var events = trips.map(function (trip) {
+                        return {
+                            id: trip.tripId,
+                            title: trip.routeCode,
+                            start: trip.departureTime,
+                            end: trip.arrivalTime
+                        };
+                    });
+
+                    if (entityType === 'controller') {
+                        var calendarEl = document.getElementById('controllerCalendar');
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'timeGridWeek',
+                            headerToolbar: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                            },
+                            events: events
+                        });
+                        calendar.render();
+                    }
+
+                    if (entityType === 'driver') {
+                        var calendarEl = document.getElementById('driverCalendar');
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'timeGridWeek',
+                            headerToolbar: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                            },
+                            events: events
+                        });
+                        calendar.render();
+                    }
+
+                    if (entityType === 'bus') {
+                        var calendarEl = document.getElementById('busCalendar');
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'timeGridWeek',
+                            headerToolbar: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                            },
+                            events: events
+                        });
+                        calendar.render();
+                    }
+                },
+                error: function (error) {
+                    console.error("Error loading upcoming trips:", error); // Debug log
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var tripId = window.location.pathname.split("/").pop();
+            console.log("Trip ID:", tripId);
+
+            loadBuses(0);
+            loadDrivers(0);
+            loadControllers(0);
+            loadStaff(0);
+            loadRoutes(0);
+
+            getSelectedItems(tripId);
+            // Handle search input
+            $("#busSearchBox").on("input", function () {
+                console.log("Bus search term:", $(this).val());
+                loadBuses(0, $(this).val());
+            });
+
+            $("#driverSearchBox").on("input", function () {
+                console.log("Driver search term:", $(this).val());
+                loadDrivers(0, $(this).val());
+            });
+
+            $("#controllerSearchBox").on("input", function () {
+                console.log("Controller search term:", $(this).val());
+                loadControllers(0, $(this).val());
+            });
+
+            $("#staffSearchBox").on("input", function () {
+                console.log("Staff search term:", $(this).val());
+                loadStaff(0, $(this).val());
+            });
+
+            $("#routeSearchBox").on("input", function () {
+                console.log("Route search term:", $(this).val());
+                loadRoutes(0, $(this).val());
+            });
+
+            // Handle form submission
+            $("#tripForm").on("submit", function (event) {
+                event.preventDefault();
+
+                var tripData = {
+                    departureTime: $("#departureTime").val(),
+                    arrivalTime: $("#arrivalTime").val(),
+                    price: $("#price").val(),
+                    status: $("#status").val(),
+                    busPlate: $("input[name='bus']:checked").data("plate"),
+                    driverId: $("input[name='driver']:checked").data("id"),
+                    controllerId: $("input[name='controller']:checked").data("id"),
+                    staff_id: $("input[name='staff']:checked").data("id"),
+                    routeCode: $("input[name='route']:checked").data("code")
+                };
+
+                console.log("Submitting trip data:", tripData);
+
+                $.ajax({
+                    url: "/api/trip/update-trip/" + tripId,
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(tripData),
+                    success: function (response) {
+                        console.log("Trip updated successfully:", response);
+                        alert("Trip updated successfully!");
+                        window.location.href = "/easy-bus/trip-management";
+                    },
+                    error: function (error) {
+                        console.error("Error updating trip:", error);
+                        alert("Error updating trip: " + error.responseJSON.message);
+                    }
+                });
+            });
+
+            // Handle selection and display details
+            $(document).on("change", "input[name='bus']", function () {
+                $("tr").removeClass("selected-row");
+                var selectedBus = $(this).closest("tr").addClass("selected-row").find("td").map(function () {
+                    return $(this).text();
+                }).get();
+                console.log("Selected bus:", selectedBus);
+                $("#selectedBusDetails").html(
+                    "<tr><td>" + selectedBus[1] + "</td><td>" + selectedBus[2] + "</td><td>" + selectedBus[3] + "</td></tr>"
+                );
+                loadUpcomingTrips('bus', $(this).data("plate"));
+            });
+
+            $(document).on("change", "input[name='driver']", function () {
+                $("tr").removeClass("selected-row");
+                var selectedDriver = $(this).closest("tr").addClass("selected-row").find("td").map(function () {
+                    return $(this).text();
+                }).get();
+                console.log("Selected driver:", selectedDriver);
+                $("#selectedDriverDetails").html(
+                    "<tr><td>" + selectedDriver[1] + "</td><td>" + selectedDriver[2] + "</td><td>" + selectedDriver[3] + "</td><td>" + selectedDriver[4] + "</td></tr>"
+                );
+                loadUpcomingTrips('driver', $(this).data("id"));
+            });
+
+            $(document).on("change", "input[name='controller']", function () {
+                $("tr").removeClass("selected-row");
+                var selectedController = $(this).closest("tr").addClass("selected-row").find("td").map(function () {
+                    return $(this).text();
+                }).get();
+                console.log("Selected controller:", selectedController);
+                $("#selectedControllerDetails").html(
+                    "<tr><td>" + selectedController[1] + "</td><td>" + selectedController[2] + "</td><td>" + selectedController[3] + "</td><td>" + selectedController[4] + "</td></tr>"
+                );
+                loadUpcomingTrips('controller', $(this).data("id"));
+            });
+
+            $(document).on("change", "input[name='staff']", function () {
+                $("tr").removeClass("selected-row");
+                var selectedStaff = $(this).closest("tr").addClass("selected-row").find("td").map(function () {
+                    return $(this).text();
+                }).get();
+                console.log("Selected staff:", selectedStaff);
+                $("#selectedStaffDetails").html(
+                    "<tr><td>" + selectedStaff[1] + "</td><td>" + selectedStaff[2] + "</td><td>" + selectedStaff[3] + "</td><td>" + selectedStaff[4] + "</td></tr>"
+                );
+            });
+
+            $(document).on("change", "input[name='route']", function () {
+                $("tr").removeClass("selected-row");
+                var selectedRoute = $(this).closest("tr").addClass("selected-row").find("td").map(function () {
+                    return $(this).text();
+                }).get();
+                console.log("Selected route:", selectedRoute);
+                $("#selectedRouteDetails").html(
+                    "<tr><td>" + selectedRoute[1] + "</td><td>" + selectedRoute[2] + "</td><td>" + selectedRoute[3] + "</td><td>" + selectedRoute[4] + "</td></tr>"
+                );
+            });
+
+            initialFormData = getFormData(document.getElementById("tripForm"));
+        });
+    </script>
+</body>
+
+</html>

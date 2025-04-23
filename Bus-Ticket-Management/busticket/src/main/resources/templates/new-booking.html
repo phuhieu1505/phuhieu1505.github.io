@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Booking</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .booked {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .reserved {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .open {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .chosen {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .seat:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/easy-bus/booking-management">Booking Management</a></li>
+                <li class="breadcrumb-item active">New Booking</li>
+            </ol>
+        </nav>
+
+        <form id="newBookingForm" method="POST" action="/home/index/booking/oneway">
+            <!-- Customer Type Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Type</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="customerType">Select Customer Type</label>
+                        <select class="form-control" id="customerType" name="customerType" required>
+                            <option value="guest">Guest</option>
+                            <option value="account">Account</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information for Guest -->
+            <div class="card mb-4" id="guestInfo">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary mb-3" data-toggle="modal"
+                            data-target="#customerModal">Choose Existing Customer</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customerName">Name</label>
+                                <input type="text" class="form-control" id="customerName" name="customerName"
+                                    required />
+                            </div>
+                            <div class="form-group">
+                                <label for="customerEmail">Email</label>
+                                <input type="email" class="form-control" id="customerEmail" name="customerEmail"
+                                    required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customerPhone">Phone</label>
+                                <input type="text" class="form-control" id="customerPhone" name="customerPhone"
+                                    required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Selection for Account -->
+            <div class="card mb-4" id="accountInfo" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Account</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary mb-3" data-toggle="modal"
+                            data-target="#accountModal">Choose Existing Account</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountId">Account</label>
+                        <input type="text" class="form-control" id="accountId" name="accountId" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="accountName">Name</label>
+                        <input type="text" class="form-control" id="accountName" name="accountName" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="accountEmail">Email</label>
+                        <input type="text" class="form-control" id="accountEmail" name="accountEmail" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="accountPhone">Phone</label>
+                        <input type="text" class="form-control" id="accountPhone" name="accountPhone" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trip Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Trip</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary mb-3" data-toggle="modal"
+                            data-target="#tripModal">Choose Existing Trip</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripId">Trip</label>
+                        <input type="text" class="form-control" id="tripId" name="tripId" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="routeCode">Route Code</label>
+                        <input type="text" class="form-control" id="routeCode" name="routeCode" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="tripDeparture">Departure Time</label>
+                        <input type="text" class="form-control" id="tripDeparture" name="tripDeparture" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="tripArrival">Arrival Time</label>
+                        <input type="text" class="form-control" id="tripArrival" name="tripArrival" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Seats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="numberOfSeats">Number of Seats</label>
+                        <input type="number" class="form-control" id="numberOfSeats" name="numberOfSeats" min="1"
+                            max="5" value="1" required />
+                    </div>
+                    <div class="seat-grid" id="seatGrid">
+                        <!-- Seats will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Type Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Ticket Type</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="ticketType">Ticket Type</label>
+                        <select class="form-control" id="ticketType" name="ticketType" required>
+                            <option value="oneway">One-way</option>
+                            <option value="roundtrip">Round-trip</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Round Trip Selection -->
+            <div class="card mb-4" id="roundTripSection" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Return Trip</h5>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-secondary mb-3" data-toggle="modal"
+                        data-target="#returnTripModal">Choose Existing Return Trip</button>
+                    <div class="form-group">
+                        <label for="returnTripId">Return Trip</label>
+                        <input type="text" class="form-control" id="returnTripId" name="returnTripId" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="returnRouteCode">Route Code</label>
+                        <input type="text" class="form-control" id="returnRouteCode" name="returnRouteCode" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="returnTripDeparture">Departure Time</label>
+                        <input type="text" class="form-control" id="returnTripDeparture" name="returnTripDeparture"
+                            readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="returnTripArrival">Arrival Time</label>
+                        <input type="text" class="form-control" id="returnTripArrival" name="returnTripArrival"
+                            readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfReturnSeats">Number of Return Seats</label>
+                        <input type="number" class="form-control" id="numberOfReturnSeats" name="numberOfReturnSeats"
+                            min="1" max="5" value="1" />
+                    </div>
+                    <div class="seat-grid" id="returnSeatGrid">
+                        <!-- Return seats will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerModalLabel">Select Customer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="customerSearch" placeholder="Search customers...">
+                    <table class="table table-striped" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Customer ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Customer rows will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="customerPagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="accountModalLabel">Select Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="accountSearch" placeholder="Search accounts...">
+                    <table class="table table-striped" id="accountTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Account ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Account rows will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="accountPagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Modal -->
+    <div class="modal fade" id="tripModal" tabindex="-1" role="dialog" aria-labelledby="tripModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tripModalLabel">Select Trip</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="tripSearch" placeholder="Search trips...">
+                    <table class="table table-striped" id="tripTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Trip ID</th>
+                                <th scope="col">Route Code</th>
+                                <th scope="col">Departure Time</th>
+                                <th scope="col">Arrival Time</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Trip rows will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="tripPagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Trip Modal -->
+    <div class="modal fade" id="returnTripModal" tabindex="-1" role="dialog" aria-labelledby="returnTripModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="returnTripModalLabel">Select Return Trip</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="returnTripSearch"
+                        placeholder="Search return trips...">
+                    <table class="table table-striped" id="returnTripTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Trip ID</th>
+                                <th scope="col">Route Code</th>
+                                <th scope="col">Departure Time</th>
+                                <th scope="col">Arrival Time</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Return Trip rows will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination" id="returnTripPagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Load accounts for account selection
+        function loadAccounts(page, searchTerm = "") {
+            console.log("Loading accounts. Page:", page, "Search term:", searchTerm);
+            $.ajax({
+                url: `/admin/api/customers-account?page=${page}&size=7&search=${searchTerm}`,
+                method: "GET",
+                success: function (data) {
+                    console.log("Accounts loaded:", data);
+                    const accounts = data.accounts;
+                    const accountTableBody = $("#accountTable tbody");
+                    accountTableBody.empty();
+                    accounts.forEach(account => {
+                        const row = $("<tr></tr>");
+                        row.append(`<td>${account.id}</td>`);
+                        row.append(`<td>${account.fullName}</td>`);
+                        row.append(`<td>${account.email}</td>`);
+                        row.append(`<td>${account.phone}</td>`);
+                        row.append(`<td><button type="button" class="btn btn-primary select-account" data-account='${JSON.stringify(account)}'>Select</button></td>`);
+                        accountTableBody.append(row);
+                    });
+                    updatePagination("#accountPagination", data.currentPage, data.totalPages, loadAccounts);
+                },
+                error: function (error) {
+                    console.error("Error loading accounts:", error);
+                }
+            });
+        }
+
+        // Load customers for guest selection
+        function loadCustomers(page, searchTerm = "") {
+            console.log("Loading customers. Page:", page, "Search term:", searchTerm);
+            $.ajax({
+                url: `/admin/api/guests?page=${page}&size=7&search=${searchTerm}`,
+                method: "GET",
+                success: function (data) {
+                    console.log("Customers loaded:", data);
+                    const customers = data.guests;
+                    const customerTableBody = $("#customerTable tbody");
+                    customerTableBody.empty();
+                    customers.forEach(customer => {
+                        const row = $("<tr></tr>");
+                        row.append(`<td>${customer.customerId}</td>`);
+                        row.append(`<td>${customer.name}</td>`);
+                        row.append(`<td>${customer.email}</td>`);
+                        row.append(`<td>${customer.phone}</td>`);
+                        row.append(`<td><button type="button" class="btn btn-primary select-customer" data-customer='${JSON.stringify(customer)}'>Select</button></td>`);
+                        customerTableBody.append(row);
+                    });
+                    updatePagination("#customerPagination", data.currentPage, data.totalPages, loadCustomers);
+                },
+                error: function (error) {
+                    console.error("Error loading customers:", error);
+                }
+            });
+        }
+
+        // Load seats for a given trip
+        function loadSeats(tripId, seatGridSelector) {
+            console.log("Loading seats for trip ID:", tripId);
+            $.ajax({
+                url: `/api/admin/trip-detail/${tripId}`,
+                method: "GET",
+                success: function (data) {
+                    console.log("Seats loaded:", data);
+                    const seats = data.seatDetails;
+                    const seatGrid = $(seatGridSelector);
+                    seatGrid.empty();
+                    seats.forEach(seat => {
+                        const seatDiv = $("<div></div>")
+                            .addClass("seat")
+                            .addClass(seat.status)
+                            .text(seat.seatName)
+                            .data("seatId", seat.seatId)
+                            .data("status", seat.status);
+                        seatGrid.append(seatDiv);
+                    });
+                },
+                error: function (error) {
+                    console.error("Error loading seats:", error);
+                }
+            });
+        }
+
+        // Load trips with waiting status
+        function loadTrips(page, searchTerm = "") {
+            console.log("Loading trips. Page:", page, "Search term:", searchTerm);
+            $.ajax({
+                url: `/admin/api/trips?page=${page}&size=7&search=${searchTerm}`,
+                method: "GET",
+                success: function (data) {
+                    console.log("Trips loaded:", data);
+                    const trips = data.trips.filter(trip => trip.status === "waiting");
+                    const tripTableBody = $("#tripTable tbody");
+                    tripTableBody.empty();
+                    trips.forEach(trip => {
+                        const row = $("<tr></tr>");
+                        row.append(`<td>${trip.tripId}</td>`);
+                        row.append(`<td>${trip.route.code}</td>`);
+                        row.append(`<td>${trip.departureTime}</td>`);
+                        row.append(`<td>${trip.arrivalTime}</td>`);
+                        row.append(`<td><button type="button" class="btn btn-primary select-trip" data-trip='${JSON.stringify(trip)}'>Select</button></td>`);
+                        tripTableBody.append(row);
+                    });
+                    updatePagination("#tripPagination", data.currentPage, data.totalPages, loadTrips);
+                },
+                error: function (error) {
+                    console.error("Error loading trips:", error);
+                }
+            });
+        }
+
+        // Load return trips with waiting status
+        function loadReturnTrips(page, searchTerm = "") {
+            console.log("Loading return trips. Page:", page, "Search term:", searchTerm);
+            const selectedTripId = $("#tripId").val();
+            $.ajax({
+                url: `/admin/api/trips?page=${page}&size=7&search=${searchTerm}`,
+                method: "GET",
+                success: function (data) {
+                    console.log("Return trips loaded:", data);
+                    const trips = data.trips.filter(trip => trip.status === "waiting" && trip.tripId !== selectedTripId);
+                    const returnTripTableBody = $("#returnTripTable tbody");
+                    returnTripTableBody.empty();
+                    trips.forEach(trip => {
+                        const row = $("<tr></tr>");
+                        row.append(`<td>${trip.tripId}</td>`);
+                        row.append(`<td>${trip.route.code}</td>`);
+                        row.append(`<td>${trip.departureTime}</td>`);
+                        row.append(`<td>${trip.arrivalTime}</td>`);
+                        row.append(`<td><button type="button" class="btn btn-primary select-return-trip" data-trip='${JSON.stringify(trip)}'>Select</button></td>`);
+                        returnTripTableBody.append(row);
+                    });
+                    updatePagination("#returnTripPagination", data.currentPage, data.totalPages, loadReturnTrips);
+                },
+                error: function (error) {
+                    console.error("Error loading return trips:", error);
+                }
+            });
+        }
+
+        // Update pagination controls
+        function updatePagination(paginationSelector, currentPage, totalPages, loadFunction) {
+            console.log("Updating pagination. Current page:", currentPage, "Total pages:", totalPages);
+            const pagination = $(paginationSelector);
+            pagination.empty();
+            for (let i = 0; i < totalPages; i++) {
+                const pageButton = $('<li class="page-item"><a class="page-link" href="#">' + (i + 1) + '</a></li>');
+                if (i === currentPage) {
+                    pageButton.addClass("active");
+                }
+                pageButton.on("click", function (e) {
+                    e.preventDefault();
+                    loadFunction(i);
+                });
+                pagination.append(pageButton);
+            }
+        }
+
+
+        // Clear all fields
+        function clearFields() {
+            console.log("Clearing all fields");
+            $("#customerName").val('');
+            $("#customerEmail").val('');
+            $("#customerPhone").val('');
+            $("#accountId").val('');
+            $("#accountName").val('');
+            $("#accountEmail").val('');
+            $("#accountPhone").val('');
+            $("#tripId").val('');
+            $("#routeCode").val('');
+            $("#tripDeparture").val('');
+            $("#tripArrival").val('');
+            $("#returnTripId").val('');
+            $("#returnRouteCode").val('');
+            $("#returnTripDeparture").val('');
+            $("#returnTripArrival").val('');
+            $("#numberOfReturnSeats").val('1');
+            $("#returnSeatGrid .seat").removeClass("chosen");
+            $(".seat").removeClass("chosen");
+        }
+
+        // Handle form submission
+        $("#newBookingForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const bookingRequest = {
+                customerType: $("#customerType").val(),
+                customerName: $("#customerName").val(),
+                customerEmail: $("#customerEmail").val(),
+                customerPhone: $("#customerPhone").val(),
+                accountId: $("#accountId").val(),
+                tripId: $("#tripId").val(),
+                numberOfSeats: $("#numberOfSeats").val(),
+                selectedSeats: $("#seatGrid .seat.chosen").map(function () { return $(this).data("seatId"); }).get(),
+                ticketType: $("#ticketType").val(),
+                returnTripId: $("#returnTripId").val(),
+                numberOfReturnSeats: $("#numberOfReturnSeats").val(),
+                selectedReturnSeats: $("#returnSeatGrid .seat.chosen").map(function () { return $(this).data("seatId"); }).get()
+            };
+
+            console.log("Booking request:", bookingRequest);
+
+            $.ajax({
+                url: "/admin/api/new-booking",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(bookingRequest),
+                success: function (response) {
+                    alert(response.message);
+                    if (response.message === "Booking created successfully.") {
+                        window.location.href = "/admin/booking-management";
+                    }
+                },
+                error: function (error) {
+                    alert("Error creating booking: " + error.responseJSON.message);
+                }
+            });
+        });
+
+        // Handle seat selection
+        $(document).on("click", ".seat.open", function () {
+            $(this).toggleClass("chosen");
+
+            const seatGrid = $(this).closest(".seat-grid");
+            const isReturnGrid = seatGrid.attr("id") === "returnSeatGrid";
+            const selectedSeats = seatGrid.find(".seat.chosen").length;
+            const maxSeats = parseInt(isReturnGrid ? $("#numberOfReturnSeats").val() : $("#numberOfSeats").val());
+
+            // Get selected seat ID
+            const selectedSeat = $(this).attr("data-seatid");
+            console.log("Selected seat:", selectedSeat);
+
+            if (selectedSeats > maxSeats) {
+                alert('You cannot select more than ' + maxSeats + ' seats.');
+                $(this).removeClass('chosen');
+            }
+        });
+
+        $(document).ready(function () {
+            // Load all data by default
+            console.log("Loading all data by default");
+            loadTrips(0);
+            loadCustomers(0);
+            loadAccounts(0);
+
+            // Show/hide round trip section based on ticket type
+            $("#ticketType").on("change", function () {
+                console.log("Ticket type changed to:", $(this).val());
+                if ($(this).val() === "roundtrip") {
+                    $("#roundTripSection").show();
+                    // $("#numberOfReturnSeats").val($("#numberOfSeats").val());
+                    loadReturnTrips(0);
+                } else {
+                    $("#roundTripSection").hide();
+                }
+            });
+
+            $("#numberOfSeats").on("change", function () {
+                const seats = $(this).val();
+                $("#numberOfReturnSeats").val(seats);
+            });
+
+            // Show/hide customer info based on customer type and clear fields
+            $("#customerType").on("change", function () {
+                console.log("Customer type changed to:", $(this).val());
+                clearFields();
+                if ($(this).val() === "guest") {
+                    $("#guestInfo").show();
+                    $("#accountInfo").hide();
+                    loadCustomers(0);
+                } else {
+                    $("#guestInfo").hide();
+                    $("#accountInfo").show();
+                    loadAccounts(0);
+                }
+            });
+
+            // Load seats for selected trip
+            $("#tripId").on("change", function () {
+                console.log("Trip ID changed to:", $(this).val());
+                loadSeats($(this).val(), "#seatGrid");
+            });
+
+            // Load seats for selected return trip
+            $("#returnTripId").on("change", function () {
+                console.log("Return Trip ID changed to:", $(this).val());
+                loadSeats($(this).val(), "#returnSeatGrid");
+            });
+
+
+
+            // Handle customer selection from modal
+            $(document).on("click", ".select-customer", function () {
+                const customer = $(this).data("customer");
+                console.log("Customer selected:", customer);
+                $("#customerName").val(customer.name);
+                $("#customerEmail").val(customer.email);
+                $("#customerPhone").val(customer.phone);
+                $("#customerModal").modal("hide");
+            });
+
+            // Handle account selection from modal
+            $(document).on("click", ".select-account", function () {
+                const account = $(this).data("account");
+                console.log("Account selected:", account);
+                $("#accountId").val(account.id);
+                $("#accountName").val(account.fullName);
+                $("#accountEmail").val(account.email);
+                $("#accountPhone").val(account.phone);
+                $("#accountModal").modal("hide");
+            });
+
+            // Handle trip selection from modal
+            $(document).on("click", ".select-trip", function () {
+                const trip = $(this).data("trip");
+                console.log("Trip selected:", trip);
+                $("#tripId").val(trip.tripId);
+                $("#routeCode").val(trip.route.code);
+                $("#tripDeparture").val(trip.departureTime);
+                $("#tripArrival").val(trip.arrivalTime);
+                $("#tripModal").modal("hide");
+                loadSeats(trip.tripId, "#seatGrid");
+            });
+
+            // Handle return trip selection from modal
+            $(document).on("click", ".select-return-trip", function () {
+                const trip = $(this).data("trip");
+                console.log("Return trip selected:", trip);
+                $("#returnTripId").val(trip.tripId);
+                $("#returnRouteCode").val(trip.route.code);
+                $("#returnTripDeparture").val(trip.departureTime);
+                $("#returnTripArrival").val(trip.arrivalTime);
+                $("#returnTripModal").modal("hide");
+                loadSeats(trip.tripId, "#returnSeatGrid");
+            });
+
+            // Search functionality for customers
+            $("#customerSearch").on("input", function () {
+                const searchTerm = $(this).val();
+                console.log("Customer search term:", searchTerm);
+                loadCustomers(0, searchTerm);
+            });
+
+            // Search functionality for accounts
+            $("#accountSearch").on("input", function () {
+                const searchTerm = $(this).val();
+                console.log("Account search term:", searchTerm);
+                loadAccounts(0, searchTerm);
+            });
+
+            // Search functionality for trips
+            $("#tripSearch").on("input", function () {
+                const searchTerm = $(this).val();
+                console.log("Trip search term:", searchTerm);
+                loadTrips(0, searchTerm);
+            });
+
+            // Search functionality for return trips
+            $("#returnTripSearch").on("input", function () {
+                const searchTerm = $(this).val();
+                console.log("Return trip search term:", searchTerm);
+                loadReturnTrips(0, searchTerm);
+            });
+        });
+    </script>
+</body>
+
+</html>

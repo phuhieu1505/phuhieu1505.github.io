@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-text-direction="ltr">
+
+<head>
+  <title>Trip Management</title>
+  <div th:insert="~{dashboard-header.html}"></div>
+  <link rel="stylesheet" th:href="@{/theme-assets/css/pagination.css}">
+  <style>
+    /*.search-box {*/
+    /*  display: flex;*/
+    /*  flex-wrap: wrap;*/
+    /*  align-items: center;*/
+    /*  background-color: #f1f1f1;*/
+    /*  border-radius: 10px;*/
+    /*  padding: 15px;*/
+    /*  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+    /*  margin-bottom: 20px;*/
+    /*}*/
+
+    /*.search-box .form-group {*/
+    /*  flex: 1;*/
+    /*  margin-right: 15px;*/
+    /*}*/
+
+    /*.search-box .form-group label {*/
+    /*  display: block;*/
+    /*  margin-bottom: 5px;*/
+    /*  font-weight: bold;*/
+    /*}*/
+
+    /*.search-box .form-group input,*/
+    /*.search-box .form-group .form-control {*/
+    /*  width: 100%;*/
+    /*  padding: 10px;*/
+    /*  border: 1px solid #ccc;*/
+    /*  border-radius: 5px;*/
+    /*  font-size: 16px;*/
+    /*}*/
+
+    /*.search-box .btn-search {*/
+    /*  background-color: #007bff;*/
+    /*  border: none;*/
+    /*  color: white;*/
+    /*  padding: 10px 20px;*/
+    /*  border-radius: 5px;*/
+    /*  cursor: pointer;*/
+    /*  display: flex;*/
+    /*  align-items: center;*/
+    /*  justify-content: center;*/
+    /*  font-size: 16px;*/
+    /*}*/
+
+    /*.search-box .btn-search i {*/
+    /*  margin-right: 5px;*/
+    /*}*/
+
+    /*.search-box .btn-search:hover {*/
+    /*  background-color: #0056b3;*/
+    /*}*/
+
+    /*Search Form v1 */
+
+    /*#searchForm {*/
+    /*  display: flex;*/
+    /*  flex-wrap: wrap; !* Cho phép xuống hàng nếu không đủ chỗ *!*/
+    /*  align-items: flex-start; !* Căn các mục theo chiều dọc từ trên xuống *!*/
+    /*  justify-content: space-between; !* Tạo khoảng cách đều giữa các mục *!*/
+    /*  gap: 15px; !* Khoảng cách giữa các phần tử *!*/
+    /*  padding: 15px; !* Tạo không gian bên trong form *!*/
+    /*}*/
+
+    /*.search-box {*/
+    /*  display: flex;*/
+    /*  flex-wrap: wrap; !* Cho phép các mục xuống hàng nếu cần *!*/
+    /*  align-items: center; !* Căn giữa các mục theo chiều dọc *!*/
+    /*  gap: 10px; !* Khoảng cách giữa các phần tử trong search-box *!*/
+    /*  width: 100%; !* Đảm bảo search-box chiếm toàn bộ chiều rộng *!*/
+    /*}*/
+
+    /*.input-search {*/
+    /*  flex: 1; !* Input tìm kiếm chiếm không gian tối đa *!*/
+    /*  padding: 10px; !* Thêm không gian bên trong input *!*/
+    /*  border: 1px solid #ddd; !* Đường viền nhạt *!*/
+    /*  border-radius: 5px; !* Bo góc input *!*/
+    /*  font-size: 16px; !* Kích thước chữ dễ nhìn *!*/
+    /*}*/
+
+    /*.form-group {*/
+    /*  display: flex;*/
+    /*  flex-direction: column; !* Label nằm trên input *!*/
+    /*  gap: 5px; !* Khoảng cách giữa label và input *!*/
+    /*  flex: 1; !* Cho phép form-group tự động co giãn *!*/
+    /*}*/
+
+    /*.form-group label {*/
+    /*  font-weight: bold; !* Làm nổi bật nhãn *!*/
+    /*  font-size: 14px; !* Cỡ chữ nhãn vừa phải *!*/
+    /*}*/
+
+    /*.form-group input {*/
+    /*  padding: 8px; !* Thêm không gian trong input *!*/
+    /*  border: 1px solid #ccc; !* Đường viền nhạt *!*/
+    /*  border-radius: 5px; !* Bo góc *!*/
+    /*  font-size: 14px; !* Kích thước chữ trong input *!*/
+    /*}*/
+
+    /*.btn-search {*/
+    /*  background-color: #007bff; !* Màu xanh lam cho nút *!*/
+    /*  color: white; !* Chữ màu trắng *!*/
+    /*  padding: 10px 20px; !* Thêm không gian bên trong nút *!*/
+    /*  border: none; !* Loại bỏ viền *!*/
+    /*  border-radius: 5px; !* Bo góc nút *!*/
+    /*  cursor: pointer; !* Con trỏ thành bàn tay khi hover *!*/
+    /*  display: flex;*/
+    /*  align-items: center;*/
+    /*  gap: 5px; !* Khoảng cách giữa icon và chữ *!*/
+    /*  font-size: 16px; !* Kích thước chữ *!*/
+    /*  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); !* Đổ bóng nhẹ *!*/
+    /*}*/
+
+    /*.btn-search:hover {*/
+    /*  background-color: #0056b3; !* Màu tối hơn khi hover *!*/
+    /*}*/
+
+
+    /*Search Form v2 */
+    #searchForm {
+      display: flex;
+      flex-direction: column; /* Các thành phần trong form sẽ xếp theo cột */
+      gap: 15px; /* Khoảng cách giữa các thành phần */
+      padding: 15px; /* Thêm không gian bên trong form */
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+      gap: 10px; /* Khoảng cách giữa các thành phần */
+      width: 100%;
+    }
+
+    .input-search {
+      flex: 1; /* Input tìm kiếm chiếm toàn bộ không gian còn lại */
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .btn-search {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 16px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* Căn nhãn và input về bên trái */
+      gap: 5px;
+      width: 100%; /* Các form-group chiếm toàn bộ chiều rộng */
+    }
+
+    .form-group label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%; /* Input chiếm toàn bộ chiều rộng của form-group */
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .btn-darker-red {
+      background-color: #8B0000;
+      /* Darker red color */
+      border-color: #8B0000;
+      color: white;
+    }
+  </style>
+</head>
+
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click"
+  data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+  <!--navigation bar-->
+  <nav th:insert="~{navigation-bar.html}"></nav>
+  <!-- main menu-->
+  <div th:insert="~{main-menu.html}"></div>
+
+  <div class="app-content content">
+    <div class="content-wrapper">
+      <div class="content-wrapper-before"></div>
+      <div class="content-header row">
+        <div class="content-header-left col-md-4 col-12 mb-2">
+          <h3 class="content-header-title"></h3>
+        </div>
+        <div class="content-header-right col-md-8 col-12">
+          <div class="breadcrumbs-top float-md-right">
+            <div class="breadcrumb-wrapper mr-1">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html"></a>
+                </li>
+                <li class="breadcrumb-item active">
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content-body"><!-- Basic Tables start -->
+        <!-- Basic Tables end -->
+        <!-- Striped rows start -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Trip</h4>
+                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                  <ul class="list-inline mb-0">
+<!--                    <li><a data-action="search" title="Search"><i class="ft-search"></i></a></li>-->
+                    <a th:href="@{/easy-bus/new-trip}" data-action="add-trip" title="Add Trip">
+                      <i class="ft-plus"></i>
+                    </a>
+                  </ul>
+                </div>
+                <form id="searchForm" method="get" onsubmit="handleSearch(event)">
+                  <div class="search-box" id="searchBox">
+                    <input type="text" id="searchField" name="searchValue" class="input-search" placeholder="Search trip..." />
+                    <button class="btn-search" id="searchButton" type="submit">
+                      <i class="ft-search"></i>
+                    </button>
+                  </div>
+
+                  <!-- Các form-group nằm ngoài search-box, sẽ được đặt dưới cùng -->
+                  <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="datetime-local" class="form-control" id="startDate" name="startDate" />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="datetime-local" class="form-control" id="endDate" name="endDate" />
+                  </div>
+                </form>
+              </div>
+              <div class="card-content collapse show">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Departure</th>
+                        <th scope="col">Arrival </th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                        <!-- <th scope="col">Bus</th>
+                        <th scope="col">Driver</th>
+                        <th scope="col">Controller</th>
+                        <th scope="col">Staff</th>
+                        <th scope="col">Route</th>
+                        <th scope="col">Seat</th> -->
+                      </tr>
+                    </thead>
+                    <tbody id="tripTableBody">
+                      <tr th:each="trip : ${trips}">
+                        <td th:text="${trip.tripId}"></td>
+                        <td th:text="${trip.departureTime}"></td>
+                        <td th:text="${trip.arrivalTime}"></td>
+                        <td th:text="${trip.price}"></td>
+                        <td th:text="${trip.status}"></td>
+                        <td>
+                          <button class="btn btn-primary btn-sm" title="View Details"
+                            onclick="viewTripDetails('${trip.tripId}')">
+                            <i class="ft-eye"></i>
+                          </button>
+                          <button class="btn btn-warning btn-sm" title="Update Trip"
+                            onclick="updateTrip('${trip.tripId}')">
+                            <i class="ft-settings"></i>
+                          </button>
+                          <button class="btn btn-danger btn-sm" title="Delete Trip"
+                            onclick="deleteTrip('${trip.tripId}')">
+                            <i class="ft-trash"></i>
+                          </button>
+                          <!--Force delete button-->
+                          <button class="btn btn-darker-red btn-sm" title="Force Delete Trip"
+                            onclick="deleteTrip('${trip.tripId}', true)">
+                            <i class="ft-trash"></i>
+                          </button>
+                        </td>
+                        <!-- <td th:text="${trip.bus.plate}"></td>
+                        <td th:text="${trip.driver.driverId}"></td>
+                        <td th:text="${trip.controller.id}"></td>
+                        <td th:text="${trip.staff.staffId}"></td>
+                        <td th:text="${trip.route.routeId}"></td>
+                        <td th:text="${trip.numberOfSeatAvailable}"></td> -->
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="pagination">
+                    <ul class="pagination-list" id="paginationControls">
+                      <li th:if="${currentPage > 0}">
+                        <a onclick="loadTrips('${currentPage - 1}')" aria-label="Previous">&laquo;</a>
+                      </li>
+                      <li th:each="pageNum : ${pageNumbers}" th:class-append="${pageNum == currentPage} ? 'active'">
+                        <a onclick="loadTrips('${pageNum}')" th:text="${pageNum}"></a>
+                      </li>
+                      <li th:if="${currentPage < totalPages - 1}">
+                        <a onclick="loadTrips('${currentPage + 1}')" aria-label="Next">&raquo;</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Striped rows end -->
+
+        <!-- Table head options start -->
+        <!-- Table head options end -->
+
+        <!-- Bordered table start -->
+        <!-- Bordered table end -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div th:insert="~{dashboard-footer.html}"></div>
+  </footer>
+
+  <!-- BEGIN VENDOR JS-->
+  <script th:src="@{/theme-assets/vendors/js/vendors.min.js}" type="text/javascript"></script>
+  <!-- BEGIN VENDOR JS-->
+  <!-- BEGIN PAGE VENDOR JS-->
+  <!-- END PAGE VENDOR JS-->
+  <!-- BEGIN CHAMELEON  JS-->
+  <script th:src="@{/theme-assets/js/core/app-menu-lite.js}" type="text/javascript"></script>
+  <script th:src="@{/theme-assets/js/core/app-lite.js}" type="text/javascript"></script>
+  <!-- END CHAMELEON  JS-->
+  <!-- BEGIN PAGE LEVEL JS-->
+  <!-- END PAGE LEVEL JS-->
+  <script>
+    function handleSearch(event) {
+      event.preventDefault();
+      const searchValue = document.getElementById('searchField').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      loadTrips(0, searchValue, startDate, endDate);
+    }
+
+    function loadTrips(page, searchValue = "", startDate = "", endDate = "") {
+      $.ajax({
+        url: '/api/trip/trips',
+        data: { page: page, size: 15, searchValue: searchValue, startDate: startDate, endDate: endDate },
+        success: function (data) {
+          var trips = data.trips;
+          var totalPages = data.totalPages;
+          var currentPage = data.currentPage;
+
+          // Clear the table body
+          $('#tripTableBody').empty();
+
+          // Populate the table with trips
+          trips.forEach(function (trip) {
+            $('#tripTableBody').append(
+              '<tr>' +
+              '<td>' + trip.tripId + '</td>' +
+              '<td>' + trip.departureTime + '</td>' +
+              '<td>' + trip.arrivalTime + '</td>' +
+              '<td>' + trip.price + '</td>' +
+              '<td>' + trip.status + '</td>' +
+              "<td>" +
+              '<button class="btn btn-primary btn-sm" title="View Details" onclick="viewTripDetails(\'' +
+              trip.tripId +
+              "')\">" +
+              '<i class="ft-eye"></i>' +
+              "</button>" +
+              '<button class="btn btn-warning btn-sm" title="Update Trip" onclick="updateTrip(\'' +
+              trip.tripId +
+              "')\">" +
+              '<i class="ft-settings"></i>' +
+              "</button>" +
+              '<button class="btn btn-danger btn-sm" title="Delete Trip" onclick="deleteTrip(\'' +
+              trip.tripId +
+              "')\">" +
+              '<i class="ft-trash"></i>' +
+              "</button>" +
+              '<button class="btn btn-darker-red btn-sm" title="Force Delete Trip" onclick="deleteTrip(\'' +
+              trip.tripId +
+              "', true)\">" +
+              '<i class="ft-trash"></i>' +
+              "</button>" +
+              "</td>" +
+              '</tr>'
+            );
+          });
+
+          // Clear the pagination controls
+          $('#paginationControls').empty();
+
+          // Add Previous button
+          if (currentPage > 0) {
+            $('#paginationControls').append(
+              '<li><a onclick="loadTrips(' + (currentPage - 1) + ', \'' + searchValue + '\', \'' + startDate + '\', \'' + endDate + '\')">&laquo;</a></li>'
+            );
+          }
+
+          // Add page numbers with ellipsis
+          var startPage = Math.max(0, currentPage - 2);
+          var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+          if (startPage > 0) {
+            $('#paginationControls').append(
+              '<li><a onclick="loadTrips(0, \'' + searchValue + '\', \'' + startDate + '\', \'' + endDate + '\')">1</a></li>'
+            );
+            if (startPage > 1) {
+              $('#paginationControls').append(
+                '<li><span>...</span></li>'
+              );
+            }
+          }
+
+          for (var i = startPage; i <= endPage; i++) {
+            $('#paginationControls').append(
+              '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadTrips(' + i + ', \'' + searchValue + '\', \'' + startDate + '\', \'' + endDate + '\')">' + (i + 1) + '</a></li>'
+            );
+          }
+
+          if (endPage < totalPages - 1) {
+            if (endPage < totalPages - 2) {
+              $('#paginationControls').append(
+                '<li><span>...</span></li>'
+              );
+            }
+            $('#paginationControls').append(
+              '<li><a onclick="loadTrips(' + (totalPages - 1) + ', \'' + searchValue + '\', \'' + startDate + '\', \'' + endDate + '\')">' + totalPages + '</a></li>'
+            );
+          }
+
+          // Add Next button
+          if (currentPage < totalPages - 1) {
+            $('#paginationControls').append(
+              '<li><a onclick="loadTrips(' + (currentPage + 1) + ', \'' + searchValue + '\', \'' + startDate + '\', \'' + endDate + '\')">&raquo;</a></li>'
+            );
+          }
+        },
+        error: function (error) {
+          console.error('Error loading trips:', error);
+        }
+      });
+    }
+
+    function viewTripDetails(tripId) {
+      window.location.href = '/easy-bus/trip-detail/' + tripId;
+    }
+
+    function updateTrip(tripId) {
+      window.location.href = '/easy-bus/update-trip/' + tripId;
+    }
+
+    function deleteTrip(tripId, forceDelete = false) {
+      const apiEndpoint = forceDelete ? '/api/trip/force-delete-trip/' : '/api/trip/delete-trip/';
+      const confirmationMessage = forceDelete
+        ? 'Are you sure you want to force delete this trip? This will remove all associated bookings and bills.'
+        : 'Are you sure you want to delete this trip?';
+
+      if (confirm(confirmationMessage)) {
+        fetch(apiEndpoint + tripId, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tripId: tripId })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert('Trip deleted successfully');
+              loadTrips(0);
+            } else if (data.success === false) {
+              alert(data.message);
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            alert('Failed to delete trip');
+          });
+      }
+    }
+
+    $(document).ready(function () {
+      loadTrips(0);
+    });
+  </script>
+</body>
+
+</html>

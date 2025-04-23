@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-text-direction="ltr">
+
+<head>
+    <title>Booking Management</title>
+    <div th:insert="~{dashboard-header.html}"></div>
+    <link rel="stylesheet" th:href="@{/theme-assets/css/pagination.css}">
+    <style>
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 25px;
+            padding: 5px 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .input-search {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 25px;
+        }
+
+        .input-search::placeholder {
+            color: #999;
+        }
+
+        .btn-search {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-search i {
+            font-size: 18px;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body class="vertical-layout vertical-menu 2-columns menu-expanded fixed-navbar" data-open="click"
+    data-menu="vertical-menu" data-color="bg-gradient-x-purple-blue" data-col="2-columns">
+    <!--navigation bar-->
+    <nav th:insert="~{navigation-bar.html}"></nav>
+    <!-- main menu-->
+    <div th:insert="~{main-menu.html}"></div>
+
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-wrapper-before"></div>
+            <div class="content-header row">
+                <div class="content-header-left col-md-4 col-12 mb-2">
+                    <h3 class="content-header-title"></h3>
+                </div>
+                <div class="content-header-right col-md-8 col-12">
+                    <div class="breadcrumbs-top float-md-right">
+                        <div class="breadcrumb-wrapper mr-1">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"></a>
+                                </li>
+                                <li class="breadcrumb-item active">
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-body"><!-- Basic Tables start -->
+                <!-- Basic Tables end -->
+                <!-- Striped rows start -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Booking</h4>
+                                <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+                                <div class="heading-elements">
+                                    <ul class="list-inline mb-0">
+                                        <li><a data-action="search" title="Search"><i class="ft-search"></i></a></li>
+                                        <!-- <a th:href="@{/easy-bus/new-booking}" data-action="add-booking"
+                                            title="Add Booking">
+                                            <i class="ft-plus"></i>
+                                        </a> -->
+                                    </ul>
+                                </div>
+                                <div class="search-box" id="searchBox">
+                                    <input type="text" class="input-search" placeholder="Search booking..."
+                                        id="searchValue">
+                                    <button class="btn-search" id="searchButton">
+                                        <i class="ft-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content collapse show">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Customer</th>
+                                                <th scope="col">Trip</th>
+                                                <th scope="col">Seats</th>
+                                                <th scope="col">Round Trip</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bookingTableBody">
+                                            <tr th:each="booking : ${bookings}">
+                                                <td th:text="${booking.bookingId}"></td>
+                                                <td th:text="${booking.customer.name}"></td>
+                                                <td th:text="${booking.trip.route.name}"></td>
+                                                <td th:text="${booking.numberOfSeat}"></td>
+                                                <td th:text="${booking.roundTrip ? 'Yes' : 'No'}"></td>
+                                                <td>
+                                                    <button class="btn btn-primary btn-sm" title="View Details"
+                                                        onclick="viewBookingDetails('${booking.bookingId}')">
+                                                        <i class="ft-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="pagination">
+                                        <ul class="pagination-list" id="paginationControls">
+                                            <li th:if="${currentPage > 0}">
+                                                <a onclick="loadBookings('${currentPage - 1}')"
+                                                    aria-label="Previous">&laquo;</a>
+                                            </li>
+                                            <li th:each="pageNum : ${pageNumbers}"
+                                                th:class-append="${pageNum == currentPage} ? 'active'">
+                                                <a onclick="loadBookings('${pageNum}')" th:text="${pageNum}"></a>
+                                            </li>
+                                            <li th:if="${currentPage < totalPages - 1}">
+                                                <a onclick="loadBookings('${currentPage + 1}')"
+                                                    aria-label="Next">&raquo;</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Striped rows end -->
+
+                <!-- Table head options start -->
+                <!-- Table head options end -->
+
+                <!-- Bordered table start -->
+                <!-- Bordered table end -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div th:insert="~{dashboard-footer.html}"></div>
+    </footer>
+
+    <!-- BEGIN VENDOR JS-->
+    <script th:src="@{/theme-assets/vendors/js/vendors.min.js}" type="text/javascript"></script>
+    <!-- BEGIN VENDOR JS-->
+    <!-- BEGIN PAGE VENDOR JS-->
+    <!-- END PAGE VENDOR JS-->
+    <!-- BEGIN CHAMELEON  JS-->
+    <script th:src="@{/theme-assets/js/core/app-menu-lite.js}" type="text/javascript"></script>
+    <script th:src="@{/theme-assets/js/core/app-lite.js}" type="text/javascript"></script>
+    <!-- END CHAMELEON  JS-->
+    <!-- BEGIN PAGE LEVEL JS-->
+    <!-- END PAGE LEVEL JS-->
+    <script>
+        function loadBookings(page, searchValue = "") {
+            $.ajax({
+                url: '/api/booking/bookings',
+                data: { page: page, size: 15, searchValue: searchValue },
+                success: function (data) {
+                    var bookings = data.bookings;
+                    var totalPages = data.totalPages;
+                    var currentPage = data.currentPage;
+
+                    // Clear the table body
+                    $('#bookingTableBody').empty();
+
+                    // Populate the table with bookings
+                    bookings.forEach(function (booking) {
+                        $('#bookingTableBody').append(
+                            '<tr>' +
+                            '<td>' + booking.bookingId + '</td>' +
+                            '<td>' + booking.customer.name + '</td>' +
+                            '<td>' + booking.trip.route.name + '</td>' +
+                            '<td>' + booking.numberOfSeat + '</td>' +
+                            '<td>' + (booking.roundTrip ? "Yes" : "No") + '</td>' +
+                            "<td>" +
+                            '<button class="btn btn-primary btn-sm" title="View Details" onclick="viewBookingDetails(\'' +
+                            booking.bookingId +
+                            "')\">" +
+                            '<i class="ft-eye"></i>' +
+                            "</button>" +
+                            "</td>" +
+                            '</tr>'
+                        );
+                    });
+
+                    // Clear the pagination controls
+                    $('#paginationControls').empty();
+
+                    // Add Previous button
+                    if (currentPage > 0) {
+                        $('#paginationControls').append(
+                            '<li><a onclick="loadBookings(' + (currentPage - 1) + ', \'' + searchValue + '\')">&laquo;</a></li>'
+                        );
+                    }
+
+                    // Add page numbers with ellipsis
+                    var startPage = Math.max(0, currentPage - 2);
+                    var endPage = Math.min(totalPages - 1, currentPage + 2);
+
+                    if (startPage > 0) {
+                        $('#paginationControls').append(
+                            '<li><a onclick="loadBookings(0, \'' + searchValue + '\')">1</a></li>'
+                        );
+                        if (startPage > 1) {
+                            $('#paginationControls').append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                    }
+
+                    for (var i = startPage; i <= endPage; i++) {
+                        $('#paginationControls').append(
+                            '<li class="' + (i === currentPage ? 'active' : '') + '"><a onclick="loadBookings(' + i + ', \'' + searchValue + '\')">' + (i + 1) + '</a></li>'
+                        );
+                    }
+
+                    if (endPage < totalPages - 1) {
+                        if (endPage < totalPages - 2) {
+                            $('#paginationControls').append(
+                                '<li><span>...</span></li>'
+                            );
+                        }
+                        $('#paginationControls').append(
+                            '<li><a onclick="loadBookings(' + (totalPages - 1) + ', \'' + searchValue + '\')">' + totalPages + '</a></li>'
+                        );
+                    }
+
+                    // Add Next button
+                    if (currentPage < totalPages - 1) {
+                        $('#paginationControls').append(
+                            '<li><a onclick="loadBookings(' + (currentPage + 1) + ', \'' + searchValue + '\')">&raquo;</a></li>'
+                        );
+                    }
+                }
+            });
+        }
+
+        function viewBookingDetails(bookingId) {
+            window.location.href = '/easy-bus/booking-detail/' + bookingId;
+        }
+
+        function updateBooking(bookingId) {
+            window.location.href = '/easy-bus/update-booking/' + bookingId;
+        }
+
+        function deleteBooking(bookingId) {
+            if (confirm('Are you sure you want to delete this booking?')) {
+                fetch('/api/booking/delete-booking/' + bookingId, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ bookingId: bookingId })
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            alert('Booking deleted successfully');
+                            loadBookings(0);
+                        } else {
+                            alert('Failed to delete booking');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Failed to delete booking');
+                    });
+            }
+        }
+
+        $(document).ready(function () {
+            loadBookings(0);
+
+            $('#searchButton').click(function () {
+                const searchValue = $('#searchValue').val();
+                loadBookings(0, searchValue);
+            });
+
+            $('#searchValue').on('keypress', function (e) {
+                if (e.which === 13) {
+                    const searchValue = $(this).val();
+                    loadBookings(0, searchValue);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

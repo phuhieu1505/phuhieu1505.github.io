@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+   <!-- basic -->
+   <meta charset="UTF-8">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <title>Easy Bus</title>
+   <meta name="keywords" content="">
+   <meta name="description" content="">
+   <meta name="author" content="">
+</head>
+<body>
+  <table class="confirm_info trip-card" style="width: 100%; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+      <tr>
+          <td colspan="2" style="padding-bottom: 10px; font-size: 24px; font-weight: bold; color: #343a40 !important;">Thông tin vé điện tử</td>
+      </tr>
+      <tr>
+          <td style="padding-bottom: 10px; font-size: 18px;">Tuyến xe</td>
+          <td style="padding-bottom: 10px; font-size: 18px; text-align: right;" th:text="${routeName}"></td>
+      </tr>
+      <tr>
+          <td style="padding-bottom: 10px; font-size: 18px;">Thời gian xuất bến</td>
+          <td style="padding-bottom: 10px; font-size: 18px; text-align: right;" th:text="${#temporals.format(departureTime,'yyyy-MM-dd HH:mm')}"></td>
+      </tr>
+      <tr>
+          <td style="padding-bottom: 10px; font-size: 18px;">Số lượng ghế</td>
+          <td style="padding-bottom: 10px; font-size: 18px; color: #007bff;text-align: right;">
+              <span th:text="${numberOfSeat}" style="margin-right: 10px;"></span> ghế
+          </td>
+      </tr>
+      <tr>
+          <td style="padding-bottom: 10px; font-size: 18px;">Số ghế</td>
+          <td style="padding-bottom: 10px; font-size: 18px; text-align: right;" th:text="${#strings.arrayJoin(listSeat, ', ')}"></td>
+      </tr>
+      <tr>
+          <td style="padding-bottom: 10px; font-size: 18px;">Tổng tiền lượt đi</td>
+          <td style="padding-bottom: 10px; font-size: 18px; color: #007bff;text-align: right;">
+              <span th:text="${totalFee}" style="margin-right: 10px;"></span> $
+          </td>
+      </tr>
+  </table>
+</body>
+</html>
